@@ -1,30 +1,29 @@
 package io.samjones.roguelike.dungeon;
 
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import com.google.common.collect.RowSortedTable;
+import com.google.common.collect.TreeBasedTable;
+
+import java.util.Collections;
 
 /**
  * A simple grid-based dungeon. Each tile in the grid represents features of the dungeon, such as floors, wall, doors,
  * etc. The rows and columns are 0-based, and the client uses them to reference tiles.
+ * <p>
+ * The implementation does not require
  */
 public class Dungeon {
-    private Table<Integer, Integer, Tile> tiles;
-    private int numCols;
-    private int numRows;
+    private RowSortedTable<Integer, Integer, Tile> tiles;
 
-    public Dungeon(int numRows, int numCols) {
-        this.numCols = numCols;
-        this.numRows = numRows;
-        // TODO - ArrayTable?
-        tiles = HashBasedTable.create(numRows, numCols);
+    public Dungeon() {
+        this.tiles = TreeBasedTable.create();
     }
 
     public int getNumCols() {
-        return numCols;
+        return Collections.max(this.tiles.columnKeySet()) + 1;
     }
 
     public int getNumRows() {
-        return numRows;
+        return this.tiles.rowKeySet().last() + 1;
     }
 
     public Tile getTile(int row, int col) {
@@ -39,11 +38,6 @@ public class Dungeon {
      * @param tile the tile to place in the dungeon
      */
     public void addTile(int row, int col, Tile tile) {
-        if (row > this.getNumRows() - 1) {
-            throw new IllegalArgumentException("specified row is out of bounds");
-        } else if (col > this.getNumCols()) {
-            throw new IllegalArgumentException("specified column is out of bounds");
-        }
         tiles.put(row, col, tile);
     }
 }
