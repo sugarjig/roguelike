@@ -1,41 +1,29 @@
 package io.samjones.roguelike;
 
-import io.samjones.roguelike.dungeon.*;
+import com.googlecode.blacken.grid.Grid;
 
 public class Main {
+    public static final int EMPTY_FLOOR = 0x20;
+    public static final int WALL = 0x23;
+    public static final int NUM_ROWS = 50;
+    public static final int NUM_COLS = 50;
+
     public static void main(String[] args) {
-        Dungeon dungeon = new Dungeon();
+        Grid<Integer> grid = new Grid<>(EMPTY_FLOOR, NUM_ROWS, NUM_COLS);
 
-        dungeon.addTile(5, 5, new Wall());
-        dungeon.addTile(5, 6, new Wall());
-        dungeon.addTile(5, 7, new Wall());
-        dungeon.addTile(5, 8, new Wall());
-        dungeon.addTile(5, 9, new Wall());
+        for (int x = 0; x < NUM_COLS; x++) {
+            for (int y = 0; y < NUM_ROWS; y++) {
+                if (x == NUM_COLS - 1) {
+                    grid.set(y, x, WALL);
+                } else if (y == NUM_ROWS - 1) {
+                    grid.set(y, x, WALL);
+                } else if (x == 0 || y == 0) {
+                    grid.set(y, x, WALL);
+                }
+            }
+        }
 
-        dungeon.addTile(6, 5, new Wall());
-        dungeon.addTile(6, 6, new StairsUp());
-        dungeon.addTile(6, 7, new Floor());
-        dungeon.addTile(6, 8, new Floor());
-        dungeon.addTile(6, 9, new Wall());
-
-        dungeon.addTile(7, 5, new Wall());
-        dungeon.addTile(7, 6, new Floor());
-        dungeon.addTile(7, 7, new Floor());
-        dungeon.addTile(7, 8, new Floor());
-        dungeon.addTile(7, 9, new Wall());
-
-        dungeon.addTile(8, 5, new Wall());
-        dungeon.addTile(8, 6, new Floor());
-        dungeon.addTile(8, 7, new Floor());
-        dungeon.addTile(8, 8, new StairsDown());
-        dungeon.addTile(8, 9, new Wall());
-
-        dungeon.addTile(9, 5, new Wall());
-        dungeon.addTile(9, 6, new Wall());
-        dungeon.addTile(9, 7, new Wall());
-        dungeon.addTile(9, 8, new Wall());
-        dungeon.addTile(9, 9, new Wall());
-
-        DungeonPrinter.print(dungeon);
+        DungeonViewer dungeonViewer = new DungeonViewer();
+        dungeonViewer.show(grid);
     }
 }

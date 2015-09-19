@@ -3,7 +3,7 @@ package io.samjones.roguelike.dungeon;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-import java.util.Collections;
+import java.util.*;
 
 /**
  * A simple grid-based dungeon. Each tile in the grid represents features of the dungeon, such as floors, wall, doors,
@@ -12,14 +12,17 @@ import java.util.Collections;
  * The implementation does not require
  */
 public class Dungeon {
+    // since the table keys are integers, use a RowSortedSet; this will (in theory) make retrieval operations faster
     private RowSortedTable<Integer, Integer, Tile> tiles;
+    private List<Room> rooms;
 
     public Dungeon() {
         this.tiles = TreeBasedTable.create();
+        this.rooms = new ArrayList<>();
     }
 
     public int getNumCols() {
-        return Collections.max(this.tiles.columnKeySet()) + 1;
+        return this.tiles.columnKeySet().size() == 0 ? 0 : Collections.max(this.tiles.columnKeySet()) + 1;
     }
 
     public int getNumRows() {
@@ -39,5 +42,29 @@ public class Dungeon {
      */
     public void addTile(int row, int col, Tile tile) {
         tiles.put(row, col, tile);
+    }
+
+    public static class Room {
+        private RowSortedTable<Integer, Integer, Tile> tiles;
+
+        public Room() {
+            this.tiles = TreeBasedTable.create();
+        }
+
+        public void addTile(int row, int col, Tile tile) {
+            tiles.put(row, col, tile);
+        }
+
+        public int getNumCols() {
+            return Collections.max(this.tiles.columnKeySet()) + 1;
+        }
+
+        public int getNumRows() {
+            return this.tiles.rowKeySet().last() + 1;
+        }
+
+        public Tile getTile(int row, int col) {
+            return tiles.get(row, col);
+        }
     }
 }
