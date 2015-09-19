@@ -5,8 +5,8 @@ import com.googlecode.blacken.grid.Grid;
 public class Main {
     public static final int EMPTY_FLOOR = 0x20;
     public static final int WALL = 0x23;
-    public static final int NUM_ROWS = 50;
-    public static final int NUM_COLS = 50;
+    public static final int NUM_ROWS = 100;
+    public static final int NUM_COLS = 100;
 
     public static void main(String[] args) {
         Grid<Integer> grid = new Grid<>(EMPTY_FLOOR, NUM_ROWS, NUM_COLS);
@@ -23,7 +23,7 @@ public class Main {
             }
         }
 
-        DungeonViewer dungeonViewer = new DungeonViewer();
-        dungeonViewer.show(grid);
+        DungeonViewer dungeonViewer = new DungeonViewer(grid);
+        dungeonViewer.show();
     }
 }
