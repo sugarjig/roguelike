@@ -1,4 +1,4 @@
-package io.samjones.roguelike;
+package io.samjones.roguelike.view;
 
 import com.googlecode.blacken.colors.ColorNames;
 import com.googlecode.blacken.colors.ColorPalette;

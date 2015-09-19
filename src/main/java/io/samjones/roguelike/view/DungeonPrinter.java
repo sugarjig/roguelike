@@ -1,4 +1,4 @@
-package io.samjones.roguelike;
+package io.samjones.roguelike.view;
 
 import io.samjones.roguelike.dungeon.*;
 
@@ -49,35 +49,29 @@ public class DungeonPrinter {
      * from its presentation.
      */
     public static class TilePrinter implements TileVisitor {
-        public static final char FLOOR = '.';
-        public static final char WALL = '#';
-        public static final char DOOR = '=';
-        public static final char STAIRS_UP = '^';
-        public static final char STAIRS_DOWN = 'v';
-
         @Override
         public void visit(Floor floor) {
-            System.out.print(FLOOR);
+            System.out.print(TileView.FLOOR);
         }
 
         @Override
         public void visit(Wall wall) {
-            System.out.print(WALL);
+            System.out.print(TileView.WALL);
         }
 
         @Override
         public void visit(Door door) {
-            System.out.print(DOOR);
+            System.out.print(TileView.DOOR);
         }
 
         @Override
         public void visit(StairsUp stairsUp) {
-            System.out.print(STAIRS_UP);
+            System.out.print(TileView.STAIRS_UP);
         }
 
         @Override
         public void visit(StairsDown stairsDown) {
-            System.out.print(STAIRS_DOWN);
+            System.out.print(TileView.STAIRS_DOWN);
         }
     }
 }

@@ -1,7 +1,5 @@
 package io.samjones.roguelike.dungeon;
 
-import io.samjones.roguelike.Visitable;
-
 /**
  * A tile in a grid-based dungeon.
  */
