@@ -10,9 +10,4 @@ public class Door implements Tile {
     public boolean isLocked() {
         return locked;
     }
-
-    @Override
-    public void accept(TileVisitor tileVisitor) {
-        tileVisitor.visit(this);
-    }
 }
