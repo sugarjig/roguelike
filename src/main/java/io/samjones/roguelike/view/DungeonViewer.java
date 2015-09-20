@@ -8,6 +8,7 @@ import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.BlackenKeys;
 import com.googlecode.blacken.terminal.CursesLikeAPI;
 import com.googlecode.blacken.terminal.TerminalInterface;
+import io.samjones.roguelike.dungeon.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +20,7 @@ public class DungeonViewer {
     private Grid<Integer> grid;
     private Point offset = new Point(0, 0);
 
-    public DungeonViewer(Grid<Integer> grid) {
+    public DungeonViewer(Dungeon dungeon) {
         TerminalInterface terminal = new SwingTerminal();
         terminal.init("Roguelike Dungeon Viewer", TERMINAL_HEIGHT, TERMINAL_WIDTH);
         this.cursesTerminal = new CursesLikeAPI(terminal);
@@ -29,10 +30,38 @@ public class DungeonViewer {
         colorPalette.putMapping(ColorNames.SVG_COLORS);
         this.cursesTerminal.setPalette(colorPalette);
 
-        this.grid = grid;
+        this.grid = translateDungeon(dungeon);
     }
 
-    public void show() {
+    private Grid<Integer> translateDungeon(Dungeon dungeon) {
+        LOGGER.debug(dungeon.toString());
+        Grid<Integer> grid = new Grid<>(TileView.NULL_TILE, dungeon.getHeight(), dungeon.getWidth());
+        for (int row = 0; row < grid.getHeight(); row++) {
+            for (int col = 0; col < grid.getWidth(); col++) {
+                Tile tile = dungeon.getTile(row, col);
+                grid.set(row, col, translateTile(tile));
+            }
+        }
+        return grid;
+    }
+
+    private int translateTile(Tile tile) {
+        if (tile instanceof Floor) {
+            return TileView.FLOOR;
+        } else if (tile instanceof Door) {
+            return TileView.DOOR;
+        } else if (tile instanceof StairsUp) {
+            return TileView.STAIRS_UP;
+        } else if (tile instanceof StairsDown) {
+            return TileView.STAIRS_DOWN;
+        } else if (tile instanceof Wall) {
+            return TileView.WALL;
+        } else {
+            return TileView.NULL_TILE;
+        }
+    }
+
+    public void showTerminal() {
         boolean quit = false;
         while (!quit) {
             showGrid(grid);
@@ -78,8 +107,14 @@ public class DungeonViewer {
     }
 
     private void moveScreen(int y, int x) {
-        this.offset = new Point(offset.getY() + y, offset.getX() + x);
-        LOGGER.debug("new screen offset: " + this.offset);
-        this.cursesTerminal.clear();
+        int xOffset = offset.getX() + x;
+        int yOffset = offset.getY() + y;
+        int maxXOffset = this.grid.getWidth() - this.cursesTerminal.getWidth();
+        int maxYOffset = this.grid.getHeight() - this.cursesTerminal.getHeight();
+        if (xOffset >= 0 && xOffset <= maxXOffset && yOffset >= 0 && yOffset <= maxYOffset) {
+            this.offset = new Point(yOffset, xOffset);
+            LOGGER.debug("new screen offset: " + this.offset);
+            this.cursesTerminal.clear();
+        }
     }
 }

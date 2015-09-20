@@ -16,12 +16,12 @@ public class DungeonPrinter {
     public static void print(Dungeon dungeon) {
         TilePrinter tilePrinter = new TilePrinter();
 
-        printHorizontalBounds(dungeon.getNumCols());
+        printHorizontalBounds(dungeon.getWidth());
         // TODO - get an Iterable of rows
-        IntStream.range(0, dungeon.getNumRows()).forEachOrdered(row -> {
+        IntStream.range(0, dungeon.getHeight()).forEachOrdered(row -> {
             System.out.print(VERTICAL_BOUND);
             // print a row
-            IntStream.range(0, dungeon.getNumCols()).forEachOrdered(col -> {
+            IntStream.range(0, dungeon.getWidth()).forEachOrdered(col -> {
                 // print a tile in a row
                 Tile tile = dungeon.getTile(row, col);
                 if (tile == null) {
@@ -33,7 +33,7 @@ public class DungeonPrinter {
             System.out.print(VERTICAL_BOUND);
             System.out.println();
         });
-        printHorizontalBounds(dungeon.getNumCols());
+        printHorizontalBounds(dungeon.getWidth());
     }
 
     private static void printHorizontalBounds(int numCols) {
@@ -72,6 +72,11 @@ public class DungeonPrinter {
         @Override
         public void visit(StairsDown stairsDown) {
             System.out.print(TileView.STAIRS_DOWN);
+        }
+
+        @Override
+        public void visit(Corridor corridor) {
+            System.out.print(TileView.CORRIDOR);
         }
     }
 }

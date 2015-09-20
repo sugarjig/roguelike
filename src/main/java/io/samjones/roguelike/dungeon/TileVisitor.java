@@ -10,4 +10,6 @@ public interface TileVisitor {
     void visit(StairsUp stairsUp);
 
     void visit(StairsDown stairsDown);
+
+    void visit(Corridor corridor);
 }
