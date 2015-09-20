@@ -3,11 +3,10 @@ package io.samjones.roguelike.dungeon;
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 // TODO - factor out box/area/region class
+
 /**
  * A simple grid-based dungeon. Each tile in the grid represents features of the dungeon, such as floors, wall, doors,
  * etc. The rows and columns are 0-based, and clients uses them to reference tiles.
@@ -17,11 +16,9 @@ import java.util.List;
 public class Dungeon {
     // since the table keys are integers, use a RowSortedSet; this will (in theory) make retrieval operations faster
     private RowSortedTable<Integer, Integer, Tile> tiles;
-    private List<Room> rooms;
 
     public Dungeon() {
         this.tiles = TreeBasedTable.create();
-        this.rooms = new ArrayList<>();
     }
 
     public int getWidth() {
@@ -40,7 +37,6 @@ public class Dungeon {
     public String toString() {
         return "Dungeon{" +
                 "tiles=" + tiles +
-                ", rooms=" + rooms +
                 '}';
     }
 
@@ -52,11 +48,24 @@ public class Dungeon {
      * @param tile the tile to place in the dungeon
      */
     public void addTile(int row, int col, Tile tile) {
+        if (row < 0) {
+            throw new IllegalArgumentException("row must be non-negative");
+        } else if (col < 0) {
+            throw new IllegalArgumentException("column must be non-negative");
+        }
         tiles.put(row, col, tile);
     }
 
     public boolean addRoom(Room room, Coordinate offset) {
-        if (canPlace(room, offset)) {
+        if (offset == null) {
+            throw new IllegalArgumentException(("offset must not be null"));
+        } else if (offset.getRow() < 0) {
+            throw new IllegalArgumentException("row offset must be non-negative");
+        } else if (offset.getColumn() < 0) {
+            throw new IllegalArgumentException("column offset must be non-negative");
+        }
+
+        if (canAddRoom(room, offset)) {
             for (int row = 0; row < room.getHeight(); row++) {
                 for (int col = 0; col < room.getWidth(); col++) {
                     Tile tile = room.getTile(row, col);
@@ -69,7 +78,11 @@ public class Dungeon {
         }
     }
 
-    public boolean canPlace(Room room, Coordinate offset) {
+    public boolean canAddRoom(Room room, Coordinate offset) {
+        if (offset.getRow() < 0 || offset.getColumn() < 0) {
+            return false;
+        }
+
         for (int row = 0; row < room.getHeight(); row++) {
             for (int col = 0; col < room.getWidth(); col++) {
                 if (this.getTile(row + offset.getRow(), col + offset.getColumn()) != null) {
@@ -77,6 +90,7 @@ public class Dungeon {
                 }
             }
         }
+
         return true;
     }
 
@@ -87,7 +101,40 @@ public class Dungeon {
             this.tiles = TreeBasedTable.create();
         }
 
+        public static Dungeon.Room createEmptyRoom(int height, int width) {
+            Dungeon.Room room = new Dungeon.Room();
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+                    Tile tile;
+                    if (row == 0 || row == height - 1) {
+                        tile = new Wall();
+                    } else if (col == 0 || col == width - 1) {
+                        tile = new Wall();
+                    } else {
+                        tile = new Floor();
+                    }
+                    room.addTile(row, col, tile);
+                }
+            }
+            return room;
+        }
+
+        public static Room createCorridor(int height, int width) {
+            Dungeon.Room room = new Dungeon.Room();
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+                    room.addTile(row, col, new Corridor());
+                }
+            }
+            return room;
+        }
+
         public void addTile(int row, int col, Tile tile) {
+            if (row < 0) {
+                throw new IllegalArgumentException("row must be non-negative");
+            } else if (col < 0) {
+                throw new IllegalArgumentException("column must be non-negative");
+            }
             tiles.put(row, col, tile);
         }
 
@@ -96,7 +143,7 @@ public class Dungeon {
         }
 
         public int getHeight() {
-            return this.tiles.rowKeySet().last() + 1;
+            return this.tiles.rowKeySet().size() == 0 ? 0 : this.tiles.rowKeySet().last() + 1;
         }
 
         public Tile getTile(int row, int col) {

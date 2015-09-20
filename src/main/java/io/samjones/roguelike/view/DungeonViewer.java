@@ -56,6 +56,8 @@ public class DungeonViewer {
             return TileView.STAIRS_DOWN;
         } else if (tile instanceof Wall) {
             return TileView.WALL;
+        } else if (tile instanceof Corridor) {
+            return TileView.CORRIDOR;
         } else {
             return TileView.NULL_TILE;
         }

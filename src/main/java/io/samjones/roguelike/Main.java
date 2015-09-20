@@ -8,7 +8,7 @@ import io.samjones.roguelike.view.DungeonViewer;
 public class Main {
     public static void main(String[] args) {
         DungeonGenerator generator = new SimpleRoomByRoomGenerator();
-        Dungeon dungeon = generator.generate(10);
+        Dungeon dungeon = generator.generate(2);
 
         DungeonViewer dungeonViewer = new DungeonViewer(dungeon);
         dungeonViewer.showTerminal();

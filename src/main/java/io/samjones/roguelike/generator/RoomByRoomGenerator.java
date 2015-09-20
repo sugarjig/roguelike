@@ -1,6 +1,5 @@
 package io.samjones.roguelike.generator;
 
-import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Dungeon;
 
 public abstract class RoomByRoomGenerator implements DungeonGenerator {
@@ -11,32 +10,22 @@ public abstract class RoomByRoomGenerator implements DungeonGenerator {
 
         // TODO - place entrance and exit
         int placedRooms = 0;
-        Dungeon.Room currentRoom = generateRoom();
-        boolean roomPlaced = placeRoom(currentRoom, dungeon);
-        if (roomPlaced) {
-            placedRooms++;
-        }
+        Dungeon.Room currentRoom = addRoom(null);
+        placedRooms++;
         while (placedRooms < numRooms) {
-            if (roomPlaced) {
-                Coordinate doorLocation = addDoor(currentRoom);
-                addCorridor(doorLocation);
-            }
-            currentRoom = generateRoom();
-            roomPlaced = placeRoom(currentRoom, dungeon);
-            if (roomPlaced) {
-                placedRooms++;
-            }
+            currentRoom = addRoom(currentRoom);
+            placedRooms++;
         }
 
         return dungeon;
     }
 
-    protected abstract void addCorridor(Coordinate doorLocation);
-
-    protected abstract Coordinate addDoor(Dungeon.Room currentRoom);
-
-    // TODO - condense down to one method (addRoom)
-    protected abstract boolean placeRoom(Dungeon.Room room, Dungeon dungeon);
-
-    protected abstract Dungeon.Room generateRoom();
+    /**
+     * Add a room to the dungeon. The implementer of this method must determine where to put the room and guarantee that
+     * it has been placed before returning.
+     *
+     * @param room the previous room placed; null if the first room in the dungeon
+     * @return the resulting room
+     */
+    protected abstract Dungeon.Room addRoom(Dungeon.Room room);
 }
