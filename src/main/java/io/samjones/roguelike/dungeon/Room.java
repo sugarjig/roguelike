@@ -3,12 +3,17 @@ package io.samjones.roguelike.dungeon;
 import io.samjones.roguelike.dungeon.tiles.*;
 
 public class Room extends Region {
-    public Room() {
+    private Coordinate offset;
+    private RoomType roomType;
+
+    public Room(RoomType roomType) {
         super();
+        this.offset = new Coordinate(0, 0);
+        this.roomType = roomType;
     }
 
-    public static Room createEmptyRoom(int height, int width) {
-        Room room = new Room();
+    public static Room createEmptyRoom(int height, int width, RoomType roomType) {
+        Room room = new Room(roomType);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 // have to specify the wall type when creating; if we store more information about rooms in a dungeon,
@@ -42,7 +47,7 @@ public class Room extends Region {
     }
 
     public static Room createCorridor(int height, int width) {
-        Room room = new Room();
+        Room room = new Room(RoomType.CORRIDOR);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
                 room.addTile(new Coordinate(row, col), new Corridor());
@@ -80,6 +85,18 @@ public class Room extends Region {
         } else { // right wall
             return CardinalDirection.EAST;
         }
+    }
+
+    public Coordinate getOffset() {
+        return offset;
+    }
+
+    public void setOffset(Coordinate offset) {
+        this.offset = offset;
+    }
+
+    public RoomType getRoomType() {
+        return roomType;
     }
 
     @Override

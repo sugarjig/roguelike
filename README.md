@@ -16,4 +16,7 @@ java -jar build/libs/roguelike-1.0-SNAPSHOT.jar <number of rooms>
 replacing `<number of rooms>` with however many rooms you want to generate. If you don't specify anything, the default
 is 10. Try not to do too many; the code written here probably won't scale well.
 
+In certain cases, the program will throw an exception if it makes too many tries generating things. This is to prevent
+being caught in an infinite loop. If it happens, just try to run the program again.
+
 Enjoy!

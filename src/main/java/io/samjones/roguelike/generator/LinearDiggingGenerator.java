@@ -9,6 +9,7 @@ import io.samjones.roguelike.dungeon.tiles.StairsDown;
 import io.samjones.roguelike.dungeon.tiles.StairsUp;
 import io.samjones.roguelike.dungeon.tiles.Tile;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -72,23 +73,24 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     @Override
     protected Room digRoom(Room previousRoom, RoomType roomType) throws Exception {
         Room room = generateRoom(roomType);
-        if (previousRoom == null) {
+        if (this.dungeon.getRooms().size() == 0) {
             dungeon.addRoom(room, new Coordinate(0, 0));
             return room;
         } else {
             for (int i = 0; i < MAX_ROOM_TRIES; i++) {
                 // find a location for a door
-                Coordinate doorLocation = chooseDoorLocation(previousRoom);
+                Room doorRoom = chooseRandomRoom();
+                Coordinate doorLocation = chooseDoorLocation(doorRoom);
 
                 // generate a corridor with a random length and find the offset within the dungeon
                 int corridorLength = random.nextInt(MAX_CORRIDOR_LENGTH - MIN_CORRIDOR_LENGTH) + MIN_CORRIDOR_LENGTH;
-                Room corridor = generateCorridor(previousRoom, doorLocation, corridorLength);
-                Coordinate corridorOffset = calculateCorridorOffset(previousRoom, doorLocation, this.previousOffset, corridorLength);
+                Room corridor = generateCorridor(doorRoom, doorLocation, corridorLength);
+                Coordinate corridorOffset = calculateCorridorOffset(doorRoom, doorLocation, doorRoom.getOffset(), corridorLength);
 
                 // if corridor can be placed, attempt to place a room
                 if (this.dungeon.canAddRoom(corridor, corridorOffset)) {
                     // calculate corridor direction and location of last tile
-                    CardinalDirection corridorDirection = previousRoom.determineWallDirection(doorLocation);
+                    CardinalDirection corridorDirection = doorRoom.determineWallDirection(doorLocation);
                     Coordinate lastCorridorTile = calculateLastCorridorTile(corridor, corridorDirection, corridorOffset);
 
                     // choose an offset for the next room
@@ -97,7 +99,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                     // try to place the next room
                     if (dungeon.canAddRoom(room, roomOffset)) {
                         // add the door to the previous room
-                        this.dungeon.addTile(doorLocation.add(this.previousOffset), generateDoor());
+                        this.dungeon.addTile(doorLocation.add(doorRoom.getOffset()), generateDoor());
 
                         // add the corridor and the new room
                         this.dungeon.addRoom(corridor, corridorOffset);
@@ -170,13 +172,19 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     private Room generateRoom(RoomType roomType) throws Exception {
         int height = random.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1) + MIN_ROOM_HEIGHT;
         int width = random.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1) + MIN_ROOM_WIDTH;
-        Room room = Room.createEmptyRoom(height, width);
+        Room room = Room.createEmptyRoom(height, width, roomType);
         if (roomType == RoomType.ENTRANCE || roomType == RoomType.EXIT) {
             Coordinate location = chooseEmptyLocation(room);
             Tile tile = roomType == RoomType.ENTRANCE ? new StairsUp() : new StairsDown();
             room.addTile(location, tile);
         }
         return room;
+    }
+
+    private Room chooseRandomRoom() {
+        List<Room> rooms = this.dungeon.getRooms();
+        int roomNum = random.nextInt(rooms.size());
+        return rooms.get(roomNum);
     }
 
     // TODO - create common method for finding locations

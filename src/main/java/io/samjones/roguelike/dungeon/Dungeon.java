@@ -2,19 +2,23 @@ package io.samjones.roguelike.dungeon;
 
 import io.samjones.roguelike.dungeon.tiles.Tile;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple grid-based dungeon. Each tile in the grid represents features of the dungeon, such as floors, wall, doors,
  * etc. The rows and columns are 0-based, and clients uses them to reference tiles.
  * <p>
  * The dungeon does not have a static size, so tiles can be placed using any row and column.
- * <p>
- * One big limitation of this design is that once rooms are placed in the dungeon, they cannot be referenced again. The
- * dungeon does not keep track of the rooms that are placed in it, only the tiles.
  */
 public class Dungeon extends Region {
+    private List<Room> rooms;
+    private List<Room> corridors;
 
     public Dungeon() {
         super();
+        rooms = new ArrayList<>();
+        corridors = new ArrayList<>();
     }
 
     public boolean addRoom(Room room, Coordinate offset) {
@@ -34,6 +38,12 @@ public class Dungeon extends Region {
                     Coordinate coordinate = location.add(offset);
                     this.addTile(coordinate, tile);
                 }
+            }
+            room.setOffset(offset);
+            if (room.getRoomType() == RoomType.CORRIDOR) {
+                this.corridors.add(room);
+            } else {
+                rooms.add(room);
             }
             return true;
         } else {
@@ -56,5 +66,9 @@ public class Dungeon extends Region {
         }
 
         return true;
+    }
+
+    public List<Room> getRooms() {
+        return rooms;
     }
 }

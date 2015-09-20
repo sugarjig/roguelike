@@ -15,11 +15,13 @@ public abstract class DiggingGenerator implements DungeonGenerator {
 
         Room currentRoom = null;
         for (int i = 0; i < numRooms; i++) {
-            RoomType roomType = null;
+            RoomType roomType;
             if (i == 0) {
                 roomType = RoomType.ENTRANCE;
             } else if (i == numRooms - 1) {
                 roomType = RoomType.EXIT;
+            } else {
+                roomType = RoomType.EMPTY;
             }
             currentRoom = digRoom(currentRoom, roomType);
         }
