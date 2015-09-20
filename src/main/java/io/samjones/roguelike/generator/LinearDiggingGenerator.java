@@ -1,5 +1,6 @@
 package io.samjones.roguelike.generator;
 
+import io.samjones.roguelike.dungeon.CardinalDirection;
 import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Room;
 import io.samjones.roguelike.dungeon.tiles.Door;

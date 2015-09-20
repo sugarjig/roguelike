@@ -4,7 +4,6 @@ import io.samjones.roguelike.dungeon.tiles.Corridor;
 import io.samjones.roguelike.dungeon.tiles.Floor;
 import io.samjones.roguelike.dungeon.tiles.Tile;
 import io.samjones.roguelike.dungeon.tiles.Wall;
-import io.samjones.roguelike.generator.CardinalDirection;
 
 public class Room extends Region {
     public Room() {

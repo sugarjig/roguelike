@@ -1,8 +1,6 @@
 package io.samjones.roguelike.dungeon;
 
 
-import io.samjones.roguelike.generator.CardinalDirection;
-
 public class Coordinate {
     private int row;
     private int column;

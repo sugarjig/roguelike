@@ -1,4 +1,4 @@
-package io.samjones.roguelike.generator;
+package io.samjones.roguelike.dungeon;
 
 /**
  * Enum for a cardinal direction.
