@@ -11,8 +11,6 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
     public static final int MIN_ROOM_WIDTH = 5;
     public static final int MAX_ROOM_HEIGHT = 15;
     public static final int MAX_ROOM_WIDTH = 15;
-    public static final int MAX_DUNGEON_HEIGHT = 25;
-    public static final int MAX_DUNGEON_WIDTH = 80;
     public static final int MIN_CORRIDOR_LENGTH = 5;
     public static final int MAX_CORRIDOR_LENGTH = 10;
     private static final Logger LOGGER = LoggerFactory.getLogger(RoomByRoomGenerator.class);
@@ -44,25 +42,9 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
                 || (col == 0 || col == room.getWidth() - 1) && row > 0 && row < room.getHeight() - 1;
     }
 
-    /**
-     * Add a door to a room in the dungeon.
-     *
-     * @param room the room to add a door to
-     * @return the coordinate of the door, relative to the room
-     */
-    private Coordinate addDoor(Dungeon.Room room) {
-        Coordinate wallLocation = chooseDoorLocation(room);
-        Door door = generateDoor();
-        int row = wallLocation.getRow() + this.previousOffset.getRow();
-        int col = wallLocation.getColumn() + this.previousOffset.getColumn();
-        Coordinate doorLocation = new Coordinate(row, col);
-        LOGGER.debug("door location: " + doorLocation);
-        this.dungeon.addTile(row, col, door);
-        return wallLocation; // location relative to room
-    }
-
     @Override
     protected Dungeon.Room addRoom(Dungeon.Room previousRoom) {
+        // TODO -refactor this beast
         Dungeon.Room room = generateRoom();
         if (previousRoom == null) {
             dungeon.addRoom(room, new Coordinate(0, 0));
@@ -80,45 +62,81 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
                         doorLocation.getColumn() + this.previousOffset.getColumn()
                 );
                 Coordinate corridorOffset = new Coordinate(0, 0);
+                CorridorDirection corridorDirection = CorridorDirection.DOWN;
                 if (doorLocation.getRow() == 0) { // top wall
                     corridor = Dungeon.Room.createCorridor(corridorLength, 1);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow() - corridorLength,
                             doorLocationInDungeon.getColumn()
                     );
+                    corridorDirection = CorridorDirection.UP;
                 } else if (doorLocation.getRow() == previousRoom.getHeight() - 1) { // bottom wall
                     corridor = Dungeon.Room.createCorridor(corridorLength, 1);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow() + 1,
                             doorLocationInDungeon.getColumn()
                     );
+                    corridorDirection = CorridorDirection.DOWN;
                 } else if (doorLocation.getColumn() == 0) { // left wall
                     corridor = Dungeon.Room.createCorridor(1, corridorLength);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow(),
                             doorLocationInDungeon.getColumn() - corridorLength
                     );
+                    corridorDirection = CorridorDirection.LEFT;
                 } else if (doorLocation.getColumn() == previousRoom.getWidth() - 1) { // right wall
                     corridor = Dungeon.Room.createCorridor(1, corridorLength);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow(),
                             doorLocationInDungeon.getColumn() + 1
                     );
+                    corridorDirection = CorridorDirection.RIGHT;
                 }
 
                 // if corridor can be placed, attempt to place a room
                 if (this.dungeon.canAddRoom(corridor, corridorOffset)) {
                     // check if room can be placed next to last corridor tile
-                    Coordinate lastCorridorTile = new Coordinate(
-                            corridorOffset.getRow() + corridor.getHeight() - 1,
-                            corridorOffset.getColumn() + corridor.getWidth() - 1
-                    );
+                    Coordinate lastCorridorTile; // absolute location in dungeon
+                    int row;
+                    int col;
+                    Coordinate otherDoorCoords;
+                    if (corridorDirection == CorridorDirection.UP) {
+                        lastCorridorTile = new Coordinate(corridorOffset.getRow(), corridorOffset.getColumn());
+                        // put the new room just above the corridor
+                        row = lastCorridorTile.getRow() - room.getHeight();
+                        col = random.nextInt(room.getWidth() - 2) + lastCorridorTile.getColumn() - (room.getWidth() - 2);
+                        otherDoorCoords = new Coordinate(lastCorridorTile.getRow() - 1, lastCorridorTile.getColumn());
+                    } else if (corridorDirection == CorridorDirection.DOWN) {
+                        lastCorridorTile = new Coordinate(corridorOffset.getRow() + corridor.getHeight() - 1, corridorOffset.getColumn());
+                        // put the new room just below the corridor
+                        row = lastCorridorTile.getRow() + 1;
+                        col = random.nextInt(room.getWidth() - 2) + lastCorridorTile.getColumn() - (room.getWidth() - 2);
+                        otherDoorCoords = new Coordinate(lastCorridorTile.getRow() + 1, lastCorridorTile.getColumn());
+                    } else if (corridorDirection == CorridorDirection.LEFT) {
+                        lastCorridorTile = new Coordinate(corridorOffset.getRow(), corridorOffset.getColumn());
+                        // put the new room just to the left of the corridor
+                        row = random.nextInt(room.getHeight() - 2) + lastCorridorTile.getRow() - (room.getHeight() - 2);
+                        col = lastCorridorTile.getColumn() - room.getWidth();
+                        otherDoorCoords = new Coordinate(lastCorridorTile.getRow(), lastCorridorTile.getColumn() - 1);
+                    } else { // CorridorDirection.RIGHT
+                        lastCorridorTile = new Coordinate(corridorOffset.getRow(), corridorOffset.getColumn() + corridor.getWidth() - 1);
+                        // put the new room just tot he right of the corridor
+                        row = random.nextInt(room.getHeight() - 2) + lastCorridorTile.getRow() - (room.getHeight() - 2);
+                        col = lastCorridorTile.getColumn() + 1;
+                        otherDoorCoords = new Coordinate(lastCorridorTile.getRow(), lastCorridorTile.getColumn() + 1);
+                    }
 
-                    LOGGER.debug("adding corridor at offset: " + corridorOffset);
-                    this.dungeon.addTile(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn(), generateDoor());
-                    this.dungeon.addRoom(corridor, corridorOffset);
+                    Coordinate roomOffset = new Coordinate(row, col);
 
-                    roomAdded = true;
+                    if (dungeon.canAddRoom(room, roomOffset)) {
+                        this.dungeon.addTile(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn(), generateDoor());
+                        this.dungeon.addRoom(corridor, corridorOffset);
+                        this.dungeon.addRoom(room, roomOffset);
+                        this.dungeon.addTile(otherDoorCoords.getRow(), otherDoorCoords.getColumn(), generateDoor());
+                        this.previousOffset = roomOffset;
+                        this.previousRoom = room;
+                        roomAdded = true;
+                    }
                 }
             }
         }
@@ -131,27 +149,10 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
         return Dungeon.Room.createEmptyRoom(height, width);
     }
 
-    private Coordinate placeRoom(Dungeon.Room room, Dungeon.Room previousRoom) {
-        Coordinate offset;
-        if (previousRoom == null) { // first room in the dungeon
-            offset = new Coordinate(0, 0);
-        } else {
-            // TODO - use different method of finding offset
-            int rowOffset = random.nextInt(MAX_DUNGEON_HEIGHT);
-            int colOffset = random.nextInt(MAX_DUNGEON_WIDTH);
-            offset = new Coordinate(rowOffset, colOffset);
-        }
-
-        boolean roomAdded = false;
-        while (!roomAdded) { // TODO - deal with infinite loops
-            roomAdded = dungeon.addRoom(room, offset);
-        }
-
-        // set these so we can use them in later operations
-        this.previousRoom = room;
-        this.previousOffset = offset;
-        LOGGER.debug("new offset: " + offset);
-
-        return offset;
+    public enum CorridorDirection {
+        UP,
+        DOWN,
+        LEFT,
+        RIGHT
     }
 }

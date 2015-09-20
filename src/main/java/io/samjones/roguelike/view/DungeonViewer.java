@@ -111,8 +111,8 @@ public class DungeonViewer {
     private void moveScreen(int y, int x) {
         int xOffset = offset.getX() + x;
         int yOffset = offset.getY() + y;
-        int maxXOffset = this.grid.getWidth() - this.cursesTerminal.getWidth();
-        int maxYOffset = this.grid.getHeight() - this.cursesTerminal.getHeight();
+        int maxXOffset = Math.max(0, this.grid.getWidth() - this.cursesTerminal.getWidth());
+        int maxYOffset = Math.max(0, this.grid.getHeight() - this.cursesTerminal.getHeight());
         if (xOffset >= 0 && xOffset <= maxXOffset && yOffset >= 0 && yOffset <= maxYOffset) {
             this.offset = new Point(yOffset, xOffset);
             LOGGER.debug("new screen offset: " + this.offset);
