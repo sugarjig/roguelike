@@ -4,10 +4,7 @@ import io.samjones.roguelike.dungeon.CardinalDirection;
 import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Room;
 import io.samjones.roguelike.dungeon.RoomType;
-import io.samjones.roguelike.dungeon.tiles.Door;
-import io.samjones.roguelike.dungeon.tiles.StairsDown;
-import io.samjones.roguelike.dungeon.tiles.StairsUp;
-import io.samjones.roguelike.dungeon.tiles.Tile;
+import io.samjones.roguelike.dungeon.tiles.*;
 
 import java.util.List;
 import java.util.Random;
@@ -27,6 +24,8 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
     public static final int MAX_DOOR_TRIES = 2 * (MAX_ROOM_HEIGHT + MAX_ROOM_WIDTH);
     public static final int MAX_ROOM_TRIES = 25;
     public static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
+    public static final double CHANCE_OF_CHEST = 0.5;
+    public static final double CHANCE_OF_MONSTER = 0.75;
     private Random random = new Random();
 
     /**
@@ -174,6 +173,25 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
             Tile tile = roomType == RoomType.ENTRANCE ? new StairsUp() : new StairsDown();
             room.addTile(location, tile);
         }
+
+        // place some items and monsters in the room
+        if (roomType == RoomType.EMPTY) {
+            if (random.nextDouble() < CHANCE_OF_CHEST) {
+                Coordinate chestLocation = chooseEmptyLocation(room);
+                room.addTile(chestLocation, new Chest(null));
+            }
+
+            if (random.nextDouble() < CHANCE_OF_MONSTER) {
+                Coordinate monsterLocation = chooseEmptyLocation(room);
+                room.addTile(monsterLocation, new Monster(false));
+            }
+        }
+
+        if (roomType == RoomType.EXIT) {
+            Coordinate bossLocation = chooseEmptyLocation(room);
+            room.addTile(bossLocation, new Monster(true));
+        }
+
         return room;
     }
 

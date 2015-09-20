@@ -12,5 +12,8 @@ public interface TileView {
     int STAIRS_UP = 0x25b3;
     int STAIRS_DOWN = 0x25bd;
     int CORRIDOR = 0x2591;
+    int CHEST = 0x2617;
+    int MONSTER = 0x2620;
+    int BOSS = 0x265b;
     int NULL_TILE = 0x2593;
 }

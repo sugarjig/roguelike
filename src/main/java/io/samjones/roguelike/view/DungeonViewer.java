@@ -70,6 +70,11 @@ public class DungeonViewer {
             }
         } else if (tile instanceof Corridor) {
             return TileView.CORRIDOR;
+        } else if (tile instanceof Chest) {
+            return TileView.CHEST;
+        } else if (tile instanceof Monster) {
+            Monster monster = (Monster) tile;
+            return monster.isBoss() ? TileView.BOSS : TileView.MONSTER;
         } else {
             return TileView.NULL_TILE;
         }
