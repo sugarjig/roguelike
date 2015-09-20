@@ -22,8 +22,8 @@ public class Region {
         return this.tiles.rowKeySet().size() == 0 ? 0 : this.tiles.rowKeySet().last() + 1;
     }
 
-    public Tile getTile(int row, int col) {
-        return tiles.get(row, col);
+    public Tile getTile(Coordinate coordinate) {
+        return tiles.get(coordinate.getRow(), coordinate.getColumn());
     }
 
     @Override

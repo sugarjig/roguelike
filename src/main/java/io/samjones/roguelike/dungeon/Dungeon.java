@@ -7,6 +7,9 @@ import io.samjones.roguelike.dungeon.tiles.Tile;
  * etc. The rows and columns are 0-based, and clients uses them to reference tiles.
  * <p>
  * The dungeon does not have a static size, so tiles can be placed using any row and column.
+ * <p>
+ * One big limitation of this design is that once rooms are placed in the dungeon, they cannot be referenced again. The
+ * dungeon does not keep track of the rooms that are placed in it, only the tiles.
  */
 public class Dungeon extends Region {
 
@@ -26,8 +29,9 @@ public class Dungeon extends Region {
         if (canAddRoom(room, offset)) {
             for (int row = 0; row < room.getHeight(); row++) {
                 for (int col = 0; col < room.getWidth(); col++) {
-                    Tile tile = room.getTile(row, col);
-                    Coordinate coordinate = new Coordinate(row + offset.getRow(), col + offset.getColumn());
+                    Coordinate location = new Coordinate(row, col);
+                    Tile tile = room.getTile(location);
+                    Coordinate coordinate = location.add(offset);
                     this.addTile(coordinate, tile);
                 }
             }
@@ -44,7 +48,8 @@ public class Dungeon extends Region {
 
         for (int row = 0; row < room.getHeight(); row++) {
             for (int col = 0; col < room.getWidth(); col++) {
-                if (this.getTile(row + offset.getRow(), col + offset.getColumn()) != null) {
+                Coordinate location = new Coordinate(row, col);
+                if (this.getTile(location.add(offset)) != null) {
                     return false;
                 }
             }

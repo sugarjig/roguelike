@@ -3,9 +3,11 @@ package io.samjones.roguelike.generator;
 import io.samjones.roguelike.dungeon.CardinalDirection;
 import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Room;
+import io.samjones.roguelike.dungeon.RoomType;
 import io.samjones.roguelike.dungeon.tiles.Door;
+import io.samjones.roguelike.dungeon.tiles.StairsDown;
+import io.samjones.roguelike.dungeon.tiles.StairsUp;
 import io.samjones.roguelike.dungeon.tiles.Tile;
-import io.samjones.roguelike.dungeon.tiles.Wall;
 
 import java.util.Random;
 
@@ -22,6 +24,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     public static final int MAX_CORRIDOR_LENGTH = 10;
     public static final int MAX_DOOR_TRIES = 2 * (MAX_ROOM_HEIGHT + MAX_ROOM_WIDTH);
     public static final int MAX_ROOM_TRIES = 25;
+    public static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
     private Random random = new Random();
     private Coordinate previousOffset = new Coordinate(0, 0);
 
@@ -67,8 +70,8 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     @Override
-    protected Room digRoom(Room previousRoom) throws Exception {
-        Room room = generateRoom();
+    protected Room digRoom(Room previousRoom, RoomType roomType) throws Exception {
+        Room room = generateRoom(roomType);
         if (previousRoom == null) {
             dungeon.addRoom(room, new Coordinate(0, 0));
             return room;
@@ -136,27 +139,6 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     /**
-     * Randomly chooses the location of the door to place in the room.
-     *
-     * @param room the room to place a door in
-     * @return the coordinate of the door, relative to the room
-     * @throws Exception if there has been too many tries finding a location for the door
-     */
-    private Coordinate chooseDoorLocation(Room room) throws Exception {
-        for (int i = 0; i < MAX_DOOR_TRIES; i++) {
-            int row = random.nextInt(room.getHeight());
-            int col = random.nextInt(room.getWidth());
-            if (room.isNotACorner(new Coordinate(row, col))) {
-                Tile tile = room.getTile(row, col);
-                if (tile instanceof Wall) {
-                    return new Coordinate(row, col);
-                }
-            }
-        }
-        throw new Exception("too many tries to choose a door location");
-    }
-
-    /**
      * Chooses the offset of the room, depending on where a corridor's last tile is located. The coordinate of the side
      * adjacent to the corridor is randomly chosen.
      *
@@ -185,9 +167,48 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         }
     }
 
-    private Room generateRoom() {
+    private Room generateRoom(RoomType roomType) throws Exception {
         int height = random.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1) + MIN_ROOM_HEIGHT;
         int width = random.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1) + MIN_ROOM_WIDTH;
-        return Room.createEmptyRoom(height, width);
+        Room room = Room.createEmptyRoom(height, width);
+        if (roomType == RoomType.ENTRANCE || roomType == RoomType.EXIT) {
+            Coordinate location = chooseEmptyLocation(room);
+            Tile tile = roomType == RoomType.ENTRANCE ? new StairsUp() : new StairsDown();
+            room.addTile(location, tile);
+        }
+        return room;
+    }
+
+    // TODO - create common method for finding locations
+    /**
+     * Randomly chooses the location of the door to place in the room.
+     *
+     * @param room the room to place a door in
+     * @return the coordinate of the door, relative to the room
+     * @throws Exception if there has been too many tries finding a location for the door
+     */
+    private Coordinate chooseDoorLocation(Room room) throws Exception {
+        for (int i = 0; i < MAX_DOOR_TRIES; i++) {
+            int row = random.nextInt(room.getHeight());
+            int col = random.nextInt(room.getWidth());
+            Coordinate location = new Coordinate(row, col);
+            if (room.isANonCornerWall(location)) {
+                return location;
+            }
+        }
+        throw new Exception("too many tries to choose a door location");
+    }
+
+    private Coordinate chooseEmptyLocation(Room room) throws Exception {
+        // find a location for the entrance/exit tile
+        for (int i = 0; i < MAX_ROOM_TILE_TRIES; i++) {
+            int row = random.nextInt(room.getHeight() - 2) + 1;
+            int col = random.nextInt(room.getWidth() - 2) + 1;
+            Coordinate location = new Coordinate(row, col);
+            if (room.isAnEmptyFloor(location)) {
+                return location;
+            }
+        }
+        throw new Exception("too many tries finding a location in the room");
     }
 }

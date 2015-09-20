@@ -2,6 +2,7 @@ package io.samjones.roguelike.generator;
 
 import io.samjones.roguelike.dungeon.Dungeon;
 import io.samjones.roguelike.dungeon.Room;
+import io.samjones.roguelike.dungeon.RoomType;
 
 /**
  * An implementation of a dungeon generator that creates a dungeon one room at a time.
@@ -12,10 +13,15 @@ public abstract class DiggingGenerator implements DungeonGenerator {
     public Dungeon generate(int numRooms) throws Exception {
         this.dungeon = new Dungeon();
 
-        // TODO - place entrance and exit
         Room currentRoom = null;
         for (int i = 0; i < numRooms; i++) {
-            currentRoom = digRoom(currentRoom);
+            RoomType roomType = null;
+            if (i == 0) {
+                roomType = RoomType.ENTRANCE;
+            } else if (i == numRooms - 1) {
+                roomType = RoomType.EXIT;
+            }
+            currentRoom = digRoom(currentRoom, roomType);
         }
 
         return dungeon;
@@ -29,5 +35,5 @@ public abstract class DiggingGenerator implements DungeonGenerator {
      * @return the resulting room
      * @throws Exception if there is a problem placing the room
      */
-    protected abstract Room digRoom(Room room) throws Exception;
+    protected abstract Room digRoom(Room room, RoomType roomType) throws Exception;
 }

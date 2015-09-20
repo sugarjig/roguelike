@@ -8,6 +8,7 @@ import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.BlackenKeys;
 import com.googlecode.blacken.terminal.CursesLikeAPI;
 import com.googlecode.blacken.terminal.TerminalInterface;
+import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Dungeon;
 import io.samjones.roguelike.dungeon.tiles.*;
 import org.slf4j.Logger;
@@ -39,7 +40,7 @@ public class DungeonViewer {
         Grid<Integer> grid = new Grid<>(TileView.NULL_TILE, dungeon.getHeight(), dungeon.getWidth());
         for (int row = 0; row < grid.getHeight(); row++) {
             for (int col = 0; col < grid.getWidth(); col++) {
-                Tile tile = dungeon.getTile(row, col);
+                Tile tile = dungeon.getTile(new Coordinate(row, col));
                 grid.set(row, col, translateTile(tile));
             }
         }

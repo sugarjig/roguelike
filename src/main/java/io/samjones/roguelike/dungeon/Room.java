@@ -38,11 +38,16 @@ public class Room extends Region {
         return room;
     }
 
-    public boolean isNotACorner(Coordinate coordinate) {
+    public boolean isANonCornerWall(Coordinate coordinate) {
         int row = coordinate.getRow();
         int col = coordinate.getColumn();
-        return (row == 0 || row == this.getHeight() - 1) && col > 0 && col < this.getWidth() - 1
-                || (col == 0 || col == this.getWidth() - 1) && row > 0 && row < this.getHeight() - 1;
+        boolean isHorizontalWall = (row == 0 || row == this.getHeight() - 1) && col > 0 && col < this.getWidth() - 1;
+        boolean isVerticalWall = (col == 0 || col == this.getWidth() - 1) && row > 0 && row < this.getHeight() - 1;
+        return isHorizontalWall || isVerticalWall;
+    }
+
+    public boolean isAnEmptyFloor(Coordinate location) {
+        return this.getTile(location) instanceof Floor;
     }
 
     /**
