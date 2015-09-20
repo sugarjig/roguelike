@@ -6,9 +6,17 @@ import io.samjones.roguelike.generator.LinearDiggingGenerator;
 import io.samjones.roguelike.view.DungeonViewer;
 
 public class Main {
+    public static final int DEFAULT_NUM_ROOMS = 10;
+
     public static void main(String[] args) throws Exception {
         DungeonGenerator generator = new LinearDiggingGenerator();
-        Dungeon dungeon = generator.generate(10);
+        int numRooms;
+        try {
+            numRooms = Integer.parseInt(args[0]);
+        } catch (Exception e) {
+            numRooms = DEFAULT_NUM_ROOMS;
+        }
+        Dungeon dungeon = generator.generate(numRooms);
 
         DungeonViewer dungeonViewer = new DungeonViewer(dungeon);
         dungeonViewer.showTerminal();

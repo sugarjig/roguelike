@@ -11,13 +11,10 @@ import com.googlecode.blacken.terminal.TerminalInterface;
 import io.samjones.roguelike.dungeon.Coordinate;
 import io.samjones.roguelike.dungeon.Dungeon;
 import io.samjones.roguelike.dungeon.tiles.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DungeonViewer {
     public static final int TERMINAL_HEIGHT = 25;
     public static final int TERMINAL_WIDTH = 80;
-    private static final Logger LOGGER = LoggerFactory.getLogger(DungeonViewer.class);
     private CursesLikeAPI cursesTerminal;
     private Grid<Integer> grid;
     private Point offset = new Point(0, 0);
@@ -36,7 +33,6 @@ public class DungeonViewer {
     }
 
     private Grid<Integer> translateDungeon(Dungeon dungeon) {
-        LOGGER.debug(dungeon.toString());
         Grid<Integer> grid = new Grid<>(TileView.NULL_TILE, dungeon.getHeight(), dungeon.getWidth());
         for (int row = 0; row < grid.getHeight(); row++) {
             for (int col = 0; col < grid.getWidth(); col++) {
@@ -131,7 +127,6 @@ public class DungeonViewer {
         int maxYOffset = Math.max(0, this.grid.getHeight() - this.cursesTerminal.getHeight());
         if (xOffset >= 0 && xOffset <= maxXOffset && yOffset >= 0 && yOffset <= maxYOffset) {
             this.offset = new Point(yOffset, xOffset);
-            LOGGER.debug("new screen offset: " + this.offset);
             this.cursesTerminal.clear();
         }
     }
