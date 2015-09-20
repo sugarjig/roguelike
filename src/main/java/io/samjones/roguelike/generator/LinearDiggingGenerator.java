@@ -21,7 +21,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         return new Door(false);
     }
 
-    private Coordinate chooseDoorLocation(Dungeon.Room room) {
+    private Coordinate chooseDoorLocation(Room room) {
         Coordinate wallCoordinate = null;
         while (wallCoordinate == null) { // TODO - deal with infinite loops
             int row = random.nextInt(room.getHeight());
@@ -36,15 +36,15 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         return wallCoordinate;
     }
 
-    private boolean isNotACorner(Dungeon.Room room, int row, int col) {
+    private boolean isNotACorner(Room room, int row, int col) {
         return (row == 0 || row == room.getHeight() - 1) && col > 0 && col < room.getWidth() - 1
                 || (col == 0 || col == room.getWidth() - 1) && row > 0 && row < room.getHeight() - 1;
     }
 
     @Override
-    protected Dungeon.Room addRoom(Dungeon.Room previousRoom) {
+    protected Room addRoom(Room previousRoom) {
         // TODO -refactor this beast
-        Dungeon.Room room = generateRoom();
+        Room room = generateRoom();
         if (previousRoom == null) {
             dungeon.addRoom(room, new Coordinate(0, 0));
         } else {
@@ -55,7 +55,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                 int corridorLength = random.nextInt(MAX_CORRIDOR_LENGTH - MIN_CORRIDOR_LENGTH) + MIN_CORRIDOR_LENGTH;
 
                 // determine direction of corridor; assumes no doors on corner walls
-                Dungeon.Room corridor = new Dungeon.Room();
+                Room corridor = new Room();
                 Coordinate doorLocationInDungeon = new Coordinate(
                         doorLocation.getRow() + this.previousOffset.getRow(),
                         doorLocation.getColumn() + this.previousOffset.getColumn()
@@ -63,28 +63,28 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                 Coordinate corridorOffset = new Coordinate(0, 0);
                 CorridorDirection corridorDirection = CorridorDirection.DOWN;
                 if (doorLocation.getRow() == 0) { // top wall
-                    corridor = Dungeon.Room.createCorridor(corridorLength, 1);
+                    corridor = Room.createCorridor(corridorLength, 1);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow() - corridorLength,
                             doorLocationInDungeon.getColumn()
                     );
                     corridorDirection = CorridorDirection.UP;
                 } else if (doorLocation.getRow() == previousRoom.getHeight() - 1) { // bottom wall
-                    corridor = Dungeon.Room.createCorridor(corridorLength, 1);
+                    corridor = Room.createCorridor(corridorLength, 1);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow() + 1,
                             doorLocationInDungeon.getColumn()
                     );
                     corridorDirection = CorridorDirection.DOWN;
                 } else if (doorLocation.getColumn() == 0) { // left wall
-                    corridor = Dungeon.Room.createCorridor(1, corridorLength);
+                    corridor = Room.createCorridor(1, corridorLength);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow(),
                             doorLocationInDungeon.getColumn() - corridorLength
                     );
                     corridorDirection = CorridorDirection.LEFT;
                 } else if (doorLocation.getColumn() == previousRoom.getWidth() - 1) { // right wall
-                    corridor = Dungeon.Room.createCorridor(1, corridorLength);
+                    corridor = Room.createCorridor(1, corridorLength);
                     corridorOffset = new Coordinate(
                             doorLocationInDungeon.getRow(),
                             doorLocationInDungeon.getColumn() + 1
@@ -128,10 +128,10 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                     Coordinate roomOffset = new Coordinate(row, col);
 
                     if (dungeon.canAddRoom(room, roomOffset)) {
-                        this.dungeon.addTile(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn(), generateDoor());
+                        this.dungeon.addTile(doorLocationInDungeon, generateDoor());
                         this.dungeon.addRoom(corridor, corridorOffset);
                         this.dungeon.addRoom(room, roomOffset);
-                        this.dungeon.addTile(otherDoorCoords.getRow(), otherDoorCoords.getColumn(), generateDoor());
+                        this.dungeon.addTile(otherDoorCoords, generateDoor());
                         this.previousOffset = roomOffset;
                         roomAdded = true;
                     }
@@ -141,10 +141,10 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         return room;
     }
 
-    private Dungeon.Room generateRoom() {
+    private Room generateRoom() {
         int height = random.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1) + MIN_ROOM_HEIGHT;
         int width = random.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1) + MIN_ROOM_WIDTH;
-        return Dungeon.Room.createEmptyRoom(height, width);
+        return Room.createEmptyRoom(height, width);
     }
 
     public enum CorridorDirection {

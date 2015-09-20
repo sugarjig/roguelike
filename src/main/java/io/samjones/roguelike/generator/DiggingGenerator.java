@@ -1,6 +1,7 @@
 package io.samjones.roguelike.generator;
 
 import io.samjones.roguelike.dungeon.Dungeon;
+import io.samjones.roguelike.dungeon.Room;
 
 public abstract class DiggingGenerator implements DungeonGenerator {
     protected Dungeon dungeon;
@@ -10,7 +11,7 @@ public abstract class DiggingGenerator implements DungeonGenerator {
 
         // TODO - place entrance and exit
         int placedRooms = 0;
-        Dungeon.Room currentRoom = addRoom(null);
+        Room currentRoom = addRoom(null);
         placedRooms++;
         while (placedRooms < numRooms) {
             currentRoom = addRoom(currentRoom);
@@ -27,5 +28,5 @@ public abstract class DiggingGenerator implements DungeonGenerator {
      * @param room the previous room placed; null if the first room in the dungeon
      * @return the resulting room
      */
-    protected abstract Dungeon.Room addRoom(Dungeon.Room room);
+    protected abstract Room addRoom(Room room);
 }
