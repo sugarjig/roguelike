@@ -24,6 +24,47 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     private Random random = new Random();
     private Coordinate previousOffset = new Coordinate(0, 0);
 
+    /**
+     * Calculates the offset for a corridor. Depends on the corridor being either one tile wide or one tile tall.
+     *
+     * @param room           the room the corridor is coming from
+     * @param doorLocation   the door where the corridor starts, relative to the room
+     * @param roomOffset     the offset for the room
+     * @param corridorLength the length of the corridor
+     * @return the offset for the corridor
+     */
+    private static Coordinate calculateCorridorOffset(Room room, Coordinate doorLocation, Coordinate roomOffset, int corridorLength) {
+        Coordinate doorLocationInDungeon = doorLocation.add(roomOffset);
+        if (doorLocation.getRow() == 0) { // top wall
+            return new Coordinate(doorLocationInDungeon.getRow() - corridorLength, doorLocationInDungeon.getColumn());
+        } else if (doorLocation.getRow() == room.getHeight() - 1) { // bottom wall
+            return new Coordinate(doorLocationInDungeon.getRow() + 1, doorLocationInDungeon.getColumn());
+        } else if (doorLocation.getColumn() == 0) { // left wall
+            return new Coordinate(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn() - corridorLength);
+        } else { // right wall
+            return new Coordinate(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn() + 1);
+        }
+    }
+
+    /**
+     * Calculates the coordinates of the last tile of a corridor. Depends on the corridor being either one tile wide or
+     * one tile tall.
+     *
+     * @param corridor  the corridor
+     * @param direction the direction the corridor is going
+     * @param offset    the offset of the corridor
+     * @return the coordinates of last tile of the corridor
+     */
+    private static Coordinate calculateLastCorridorTile(Room corridor, CardinalDirection direction, Coordinate offset) {
+        if (direction == CardinalDirection.NORTH || direction == CardinalDirection.WEST) {
+            return new Coordinate(offset.getRow(), offset.getColumn());
+        } else if (direction == CardinalDirection.SOUTH) {
+            return new Coordinate(offset.getRow() + corridor.getHeight() - 1, offset.getColumn());
+        } else { // CorridorDirection.EAST
+            return new Coordinate(offset.getRow(), offset.getColumn() + corridor.getWidth() - 1);
+        }
+    }
+
     @Override
     protected Room digRoom(Room previousRoom) throws Exception {
         // TODO -refactor this beast
@@ -68,7 +109,24 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     /**
+     * Generates a corridor based on the location of a door in a room.
+     *
+     * @param room         the room where the corridor is coming from
+     * @param doorLocation the location of the door where the corridor starts
+     * @param length       the length of the corridor
+     * @return the Room that contains the corridor tiles
+     */
+    private Room generateCorridor(Room room, Coordinate doorLocation, int length) {
+        if (doorLocation.getRow() == 0 || doorLocation.getRow() == room.getHeight() - 1) { // top or bottom wall
+            return Room.createCorridor(length, 1);
+        } else { // left or right wall
+            return Room.createCorridor(1, length);
+        }
+    }
+
+    /**
      * Randomly chooses the location of the door to place in the room.
+     *
      * @param room the room to place a door in
      * @return the coordinate of the door, relative to the room
      * @throws Exception if there has been too many tries finding a location for the door
@@ -88,7 +146,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     /**
-     * Chooses the offset of the room. The coordinate of the side adjacent to the corridor is randomly chosen.
+     * Chooses the offset of the room, depending on where a corridor's last tile is located. The coordinate of the side adjacent to the corridor is randomly chosen.
      *
      * @param room              the room
      * @param corridorDirection the direction of the corridor going into the room
@@ -112,62 +170,6 @@ public class LinearDiggingGenerator extends DiggingGenerator {
             int row = random.nextInt(room.getHeight() - 2) + lastCorridorTile.getRow() - (room.getHeight() - 2);
             int col = lastCorridorTile.getColumn() + 1;
             return new Coordinate(row, col);
-        }
-    }
-
-    /**
-     * Calculates the coordinates of the last tile of a corridor.
-     *
-     * @param corridor  the corridor
-     * @param direction the direction the corridor is going
-     * @param offset    the offset of the corridor
-     * @return the coordinates of last tile of the corridor
-     */
-    private Coordinate calculateLastCorridorTile(Room corridor, CardinalDirection direction, Coordinate offset) {
-        if (direction == CardinalDirection.NORTH || direction == CardinalDirection.WEST) {
-            return new Coordinate(offset.getRow(), offset.getColumn());
-        } else if (direction == CardinalDirection.SOUTH) {
-            return new Coordinate(offset.getRow() + corridor.getHeight() - 1, offset.getColumn());
-        } else { // CorridorDirection.EAST
-            return new Coordinate(offset.getRow(), offset.getColumn() + corridor.getWidth() - 1);
-        }
-    }
-
-    /**
-     * Calculates the offset for a corridor.
-     *
-     * @param room           the room the corridor is coming from
-     * @param doorLocation   the door where the corridor starts, relative to the room
-     * @param roomOffset     the offset for the room
-     * @param corridorLength the length of the corridor
-     * @return the offset for the corridor
-     */
-    private Coordinate calculateCorridorOffset(Room room, Coordinate doorLocation, Coordinate roomOffset, int corridorLength) {
-        Coordinate doorLocationInDungeon = doorLocation.add(roomOffset);
-        if (doorLocation.getRow() == 0) { // top wall
-            return new Coordinate(doorLocationInDungeon.getRow() - corridorLength, doorLocationInDungeon.getColumn());
-        } else if (doorLocation.getRow() == room.getHeight() - 1) { // bottom wall
-            return new Coordinate(doorLocationInDungeon.getRow() + 1, doorLocationInDungeon.getColumn());
-        } else if (doorLocation.getColumn() == 0) { // left wall
-            return new Coordinate(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn() - corridorLength);
-        } else { // right wall
-            return new Coordinate(doorLocationInDungeon.getRow(), doorLocationInDungeon.getColumn() + 1);
-        }
-    }
-
-    /**
-     * Generates a corridor based on the location of a door in a room.
-     *
-     * @param room         the room where the corridor is coming from
-     * @param doorLocation the location of the door where the corridor starts
-     * @param length       the length of the corridor
-     * @return the Room that contains the corridor tiles
-     */
-    private Room generateCorridor(Room room, Coordinate doorLocation, int length) {
-        if (doorLocation.getRow() == 0 || doorLocation.getRow() == room.getHeight() - 1) { // top or bottom wall
-            return Room.createCorridor(length, 1);
-        } else { // left or right wall
-            return Room.createCorridor(1, length);
         }
     }
 
