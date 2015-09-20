@@ -6,9 +6,9 @@ import io.samjones.roguelike.generator.LinearDiggingGenerator;
 import io.samjones.roguelike.view.DungeonViewer;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         DungeonGenerator generator = new LinearDiggingGenerator();
-        Dungeon dungeon = generator.generate(10);
+        Dungeon dungeon = generator.generate(20);
 
         DungeonViewer dungeonViewer = new DungeonViewer(dungeon);
         dungeonViewer.showTerminal();
