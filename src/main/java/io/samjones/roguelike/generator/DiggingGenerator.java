@@ -2,7 +2,7 @@ package io.samjones.roguelike.generator;
 
 import io.samjones.roguelike.dungeon.Dungeon;
 
-public abstract class RoomByRoomGenerator implements DungeonGenerator {
+public abstract class DiggingGenerator implements DungeonGenerator {
     protected Dungeon dungeon;
 
     public Dungeon generate(int numRooms) {

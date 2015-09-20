@@ -6,16 +6,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
-public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
+public class LinearDiggingGenerator extends DiggingGenerator {
     public static final int MIN_ROOM_HEIGHT = 5;
     public static final int MIN_ROOM_WIDTH = 5;
     public static final int MAX_ROOM_HEIGHT = 15;
     public static final int MAX_ROOM_WIDTH = 15;
-    public static final int MIN_CORRIDOR_LENGTH = 5;
+    public static final int MIN_CORRIDOR_LENGTH = 1;
     public static final int MAX_CORRIDOR_LENGTH = 10;
-    private static final Logger LOGGER = LoggerFactory.getLogger(RoomByRoomGenerator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DiggingGenerator.class);
     private Random random = new Random();
-    private Dungeon.Room previousRoom;
     private Coordinate previousOffset = new Coordinate(0, 0);
 
     protected Door generateDoor() {
@@ -50,7 +49,7 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
             dungeon.addRoom(room, new Coordinate(0, 0));
         } else {
             boolean roomAdded = false;
-            while (!roomAdded) {
+            while (!roomAdded) { // TODO - prevent infinite loops
                 Coordinate doorLocation = chooseDoorLocation(previousRoom);
 
                 int corridorLength = random.nextInt(MAX_CORRIDOR_LENGTH - MIN_CORRIDOR_LENGTH) + MIN_CORRIDOR_LENGTH;
@@ -134,7 +133,6 @@ public class SimpleRoomByRoomGenerator extends RoomByRoomGenerator {
                         this.dungeon.addRoom(room, roomOffset);
                         this.dungeon.addTile(otherDoorCoords.getRow(), otherDoorCoords.getColumn(), generateDoor());
                         this.previousOffset = roomOffset;
-                        this.previousRoom = room;
                         roomAdded = true;
                     }
                 }
