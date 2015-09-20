@@ -15,5 +15,6 @@ public interface TileView {
     int CHEST = 0x2617;
     int MONSTER = 0x2620;
     int BOSS = 0x265b;
+    int TRAP = 0x26a1;
     int NULL_TILE = 0x2593;
 }

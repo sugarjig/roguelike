@@ -26,6 +26,7 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
     public static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
     public static final double CHANCE_OF_CHEST = 0.5;
     public static final double CHANCE_OF_MONSTER = 0.75;
+    public static final double CHANCE_OF_TRAP = 0.25;
     private Random random = new Random();
 
     /**
@@ -184,6 +185,11 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
             if (random.nextDouble() < CHANCE_OF_MONSTER) {
                 Coordinate monsterLocation = chooseEmptyLocation(room);
                 room.addTile(monsterLocation, new Monster(false));
+            }
+
+            if (random.nextDouble() < CHANCE_OF_TRAP) {
+                Coordinate trapLocation = chooseEmptyLocation(room);
+                room.addTile(trapLocation, new Trap());
             }
         }
 

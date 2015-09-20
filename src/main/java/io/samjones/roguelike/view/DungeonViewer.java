@@ -75,6 +75,8 @@ public class DungeonViewer {
         } else if (tile instanceof Monster) {
             Monster monster = (Monster) tile;
             return monster.isBoss() ? TileView.BOSS : TileView.MONSTER;
+        } else if (tile instanceof Trap) {
+            return TileView.TRAP;
         } else {
             return TileView.NULL_TILE;
         }
