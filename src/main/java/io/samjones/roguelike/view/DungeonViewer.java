@@ -8,7 +8,8 @@ import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.BlackenKeys;
 import com.googlecode.blacken.terminal.CursesLikeAPI;
 import com.googlecode.blacken.terminal.TerminalInterface;
-import io.samjones.roguelike.dungeon.*;
+import io.samjones.roguelike.dungeon.Dungeon;
+import io.samjones.roguelike.dungeon.tiles.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,5 +1,10 @@
 package io.samjones.roguelike.dungeon;
 
+import io.samjones.roguelike.dungeon.tiles.Corridor;
+import io.samjones.roguelike.dungeon.tiles.Floor;
+import io.samjones.roguelike.dungeon.tiles.Tile;
+import io.samjones.roguelike.dungeon.tiles.Wall;
+
 /**
  * Created by sam for roguelike.
  */

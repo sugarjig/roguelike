@@ -1,5 +1,7 @@
 package io.samjones.roguelike.dungeon;
 
+import io.samjones.roguelike.dungeon.tiles.Tile;
+
 /**
  * A simple grid-based dungeon. Each tile in the grid represents features of the dungeon, such as floors, wall, doors,
  * etc. The rows and columns are 0-based, and clients uses them to reference tiles.

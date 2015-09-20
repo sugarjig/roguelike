@@ -1,6 +1,10 @@
 package io.samjones.roguelike.generator;
 
-import io.samjones.roguelike.dungeon.*;
+import io.samjones.roguelike.dungeon.Coordinate;
+import io.samjones.roguelike.dungeon.Room;
+import io.samjones.roguelike.dungeon.tiles.Door;
+import io.samjones.roguelike.dungeon.tiles.Tile;
+import io.samjones.roguelike.dungeon.tiles.Wall;
 
 import java.util.Random;
 
@@ -44,7 +48,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     @Override
-    protected Room addRoom(Room previousRoom) throws Exception {
+    protected Room digRoom(Room previousRoom) throws Exception {
         // TODO -refactor this beast
         Room room = generateRoom();
         if (previousRoom == null) {

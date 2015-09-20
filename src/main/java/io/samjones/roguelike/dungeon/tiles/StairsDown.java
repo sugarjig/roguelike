@@ -1,4 +1,4 @@
-package io.samjones.roguelike.dungeon;
+package io.samjones.roguelike.dungeon.tiles;
 
 public class StairsDown implements Tile {
 }

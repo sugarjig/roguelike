@@ -15,7 +15,7 @@ public abstract class DiggingGenerator implements DungeonGenerator {
         // TODO - place entrance and exit
         Room currentRoom = null;
         for (int i = 0; i < numRooms; i++) {
-            currentRoom = addRoom(currentRoom);
+            currentRoom = digRoom(currentRoom);
         }
 
         return dungeon;
@@ -27,6 +27,7 @@ public abstract class DiggingGenerator implements DungeonGenerator {
      *
      * @param room the previous room placed; use null if the first room in the dungeon
      * @return the resulting room
+     * @throws Exception if there is a problem placing the room
      */
-    protected abstract Room addRoom(Room room) throws Exception;
+    protected abstract Room digRoom(Room room) throws Exception;
 }

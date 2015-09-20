@@ -2,6 +2,7 @@ package io.samjones.roguelike.dungeon;
 
 import com.google.common.collect.RowSortedTable;
 import com.google.common.collect.TreeBasedTable;
+import io.samjones.roguelike.dungeon.tiles.Tile;
 
 import java.util.Collections;
 

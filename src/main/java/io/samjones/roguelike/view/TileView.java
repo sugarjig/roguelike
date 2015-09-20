@@ -8,4 +8,5 @@ public interface TileView {
     int STAIRS_DOWN = 'v';
     int CORRIDOR = '#';
     int NULL_TILE = ' ';
+    // TODO - use box drawing unicode
 }
