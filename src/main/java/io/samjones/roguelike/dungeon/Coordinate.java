@@ -18,6 +18,10 @@ public class Coordinate {
         return column;
     }
 
+    public Coordinate add(Coordinate coordinate) {
+        return new Coordinate(this.getRow() + coordinate.getRow(), this.getColumn() + coordinate.getColumn());
+    }
+
     @Override
     public String toString() {
         return "Coordinate{" +
