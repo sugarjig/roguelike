@@ -57,7 +57,21 @@ public class DungeonViewer {
         } else if (tile instanceof StairsDown) {
             return TileView.STAIRS_DOWN;
         } else if (tile instanceof Wall) {
-            return TileView.WALL;
+            Wall wall = (Wall) tile;
+            WallType wallType = wall.getWallType();
+            if (wallType == WallType.HORIZONTAL) {
+                return TileView.WALL_HORIZONTAL;
+            } else if (wallType == WallType.VERTICAL) {
+                return TileView.WALL_VERTICAL;
+            } else if (wallType == WallType.UPPER_LEFT) {
+                return TileView.WALL_UPPER_LEFT;
+            } else if (wallType == WallType.UPPER_RIGHT) {
+                return TileView.WALL_UPPER_RIGHT;
+            } else if (wallType == WallType.LOWER_LEFT) {
+                return TileView.WALL_LOWER_LEFT;
+            } else { // Wall.WallType.LOWER_RIGHT
+                return TileView.WALL_LOWER_RIGHT;
+            }
         } else if (tile instanceof Corridor) {
             return TileView.CORRIDOR;
         } else {

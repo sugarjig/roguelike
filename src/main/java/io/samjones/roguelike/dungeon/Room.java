@@ -1,9 +1,6 @@
 package io.samjones.roguelike.dungeon;
 
-import io.samjones.roguelike.dungeon.tiles.Corridor;
-import io.samjones.roguelike.dungeon.tiles.Floor;
-import io.samjones.roguelike.dungeon.tiles.Tile;
-import io.samjones.roguelike.dungeon.tiles.Wall;
+import io.samjones.roguelike.dungeon.tiles.*;
 
 public class Room extends Region {
     public Room() {
@@ -14,11 +11,27 @@ public class Room extends Region {
         Room room = new Room();
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
+                // have to specify the wall type when creating; if we store more information about rooms in a dungeon,
+                // we can do this work in the view
                 Tile tile;
-                if (row == 0 || row == height - 1) {
-                    tile = new Wall();
+                if (row == 0) {
+                    if (col == 0) {
+                        tile = new Wall(WallType.UPPER_LEFT);
+                    } else if (col == width - 1) {
+                        tile = new Wall(WallType.UPPER_RIGHT);
+                    } else {
+                        tile = new Wall(WallType.HORIZONTAL);
+                    }
+                } else if (row == height - 1) {
+                    if (col == 0) {
+                        tile = new Wall(WallType.LOWER_LEFT);
+                    } else if (col == width - 1) {
+                        tile = new Wall(WallType.LOWER_RIGHT);
+                    } else {
+                        tile = new Wall(WallType.HORIZONTAL);
+                    }
                 } else if (col == 0 || col == width - 1) {
-                    tile = new Wall();
+                    tile = new Wall(WallType.VERTICAL);
                 } else {
                     tile = new Floor();
                 }
