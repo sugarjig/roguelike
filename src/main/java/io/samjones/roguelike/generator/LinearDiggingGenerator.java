@@ -68,33 +68,43 @@ public class LinearDiggingGenerator extends DiggingGenerator {
 
     @Override
     protected Room digRoom(Room previousRoom) throws Exception {
-        // TODO -refactor this beast
         Room room = generateRoom();
         if (previousRoom == null) {
             dungeon.addRoom(room, new Coordinate(0, 0));
             return room;
         } else {
             for (int i = 0; i < MAX_ROOM_TRIES; i++) {
+                // find a location for a door
                 Coordinate doorLocation = chooseDoorLocation(previousRoom);
 
+                // generate a corridor with a random length and find the offset within the dungeon
                 int corridorLength = random.nextInt(MAX_CORRIDOR_LENGTH - MIN_CORRIDOR_LENGTH) + MIN_CORRIDOR_LENGTH;
+                Room corridor = generateCorridor(previousRoom, doorLocation, corridorLength);
                 Coordinate corridorOffset = calculateCorridorOffset(previousRoom, doorLocation, this.previousOffset, corridorLength);
 
                 // if corridor can be placed, attempt to place a room
-                Room corridor = generateCorridor(previousRoom, doorLocation, corridorLength);
                 if (this.dungeon.canAddRoom(corridor, corridorOffset)) {
+                    // calculate corridor direction and location of last tile
                     CardinalDirection corridorDirection = previousRoom.determineWallDirection(doorLocation);
                     Coordinate lastCorridorTile = calculateLastCorridorTile(corridor, corridorDirection, corridorOffset);
+
+                    // choose an offset for the next room
                     Coordinate roomOffset = chooseRoomOffset(room, corridorDirection, lastCorridorTile);
 
+                    // try to place the next room
                     if (dungeon.canAddRoom(room, roomOffset)) {
+                        // add the door to the previous room
                         this.dungeon.addTile(doorLocation.add(this.previousOffset), generateDoor());
+
+                        // add the corridor and the new room
                         this.dungeon.addRoom(corridor, corridorOffset);
                         this.dungeon.addRoom(room, roomOffset);
 
+                        // place a door in the new room where the corridor ends
                         Coordinate otherDoorCoords = lastCorridorTile.calculateNeighborCoordinate(corridorDirection);
                         this.dungeon.addTile(otherDoorCoords, generateDoor());
 
+                        // set the offset of the new room so we can use it to generate the next room
                         this.previousOffset = roomOffset;
 
                         return room;
@@ -147,7 +157,8 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     /**
-     * Chooses the offset of the room, depending on where a corridor's last tile is located. The coordinate of the side adjacent to the corridor is randomly chosen.
+     * Chooses the offset of the room, depending on where a corridor's last tile is located. The coordinate of the side
+     * adjacent to the corridor is randomly chosen.
      *
      * @param room              the room
      * @param corridorDirection the direction of the corridor going into the room
