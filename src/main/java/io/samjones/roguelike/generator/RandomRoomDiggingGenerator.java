@@ -14,9 +14,10 @@ import java.util.Random;
 
 /**
  * A simple implementation of a digging generator. This generator starts with a room, then for each subsequent room it
- * randomly tries to dig a corridor and room, stopping when it can successfully do so.
+ * randomly chooses an existing room and tries to dig a new corridor and new room, stopping when it can successfully do
+ * so.
  */
-public class LinearDiggingGenerator extends DiggingGenerator {
+public class RandomRoomDiggingGenerator extends DiggingGenerator {
     public static final int MIN_ROOM_HEIGHT = 5;
     public static final int MIN_ROOM_WIDTH = 5;
     public static final int MAX_ROOM_HEIGHT = 15;
@@ -184,6 +185,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     }
 
     // TODO - create common method for finding locations
+
     /**
      * Randomly chooses the location of the door to place in the room.
      *
