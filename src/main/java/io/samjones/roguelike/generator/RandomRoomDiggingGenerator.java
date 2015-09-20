@@ -34,12 +34,11 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
      *
      * @param room           the room the corridor is coming from
      * @param doorLocation   the door where the corridor starts, relative to the room
-     * @param roomOffset     the offset for the room
      * @param corridorLength the length of the corridor
      * @return the offset for the corridor
      */
-    private static Coordinate calculateCorridorOffset(Room room, Coordinate doorLocation, Coordinate roomOffset, int corridorLength) {
-        Coordinate doorLocationInDungeon = doorLocation.add(roomOffset);
+    private static Coordinate calculateCorridorOffset(Room room, Coordinate doorLocation, int corridorLength) {
+        Coordinate doorLocationInDungeon = doorLocation.add(room.getOffset());
         if (doorLocation.getRow() == 0) { // top wall
             return new Coordinate(doorLocationInDungeon.getRow() - corridorLength, doorLocationInDungeon.getColumn());
         } else if (doorLocation.getRow() == room.getHeight() - 1) { // bottom wall
@@ -71,7 +70,7 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
     }
 
     @Override
-    protected Room digRoom(Room previousRoom, RoomType roomType) throws Exception {
+    protected Room digRoom(RoomType roomType) throws Exception {
         Room room = generateRoom(roomType);
         if (this.dungeon.getRooms().size() == 0) {
             dungeon.addRoom(room, new Coordinate(0, 0));
@@ -85,7 +84,7 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
                 // generate a corridor with a random length and find the offset within the dungeon
                 int corridorLength = random.nextInt(MAX_CORRIDOR_LENGTH - MIN_CORRIDOR_LENGTH) + MIN_CORRIDOR_LENGTH;
                 Room corridor = generateCorridor(doorRoom, doorLocation, corridorLength);
-                Coordinate corridorOffset = calculateCorridorOffset(doorRoom, doorLocation, doorRoom.getOffset(), corridorLength);
+                Coordinate corridorOffset = calculateCorridorOffset(doorRoom, doorLocation, corridorLength);
 
                 // if corridor can be placed, attempt to place a room
                 if (this.dungeon.canAddRoom(corridor, corridorOffset)) {
