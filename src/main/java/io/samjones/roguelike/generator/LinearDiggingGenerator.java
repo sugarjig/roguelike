@@ -20,32 +20,9 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     public static final int MIN_CORRIDOR_LENGTH = 1;
     public static final int MAX_CORRIDOR_LENGTH = 10;
     public static final int MAX_DOOR_TRIES = 2 * (MAX_ROOM_HEIGHT + MAX_ROOM_WIDTH);
-    public static final int MAX_ROOM_TRIES = 10;
+    public static final int MAX_ROOM_TRIES = 25;
     private Random random = new Random();
     private Coordinate previousOffset = new Coordinate(0, 0);
-
-    private Door generateDoor() {
-        return new Door(false);
-    }
-
-    private Coordinate chooseDoorLocation(Room room) throws Exception {
-        for (int i = 0; i < MAX_DOOR_TRIES; i++) {
-            int row = random.nextInt(room.getHeight());
-            int col = random.nextInt(room.getWidth());
-            if (isNotACorner(room, row, col)) {
-                Tile tile = room.getTile(row, col);
-                if (tile instanceof Wall) {
-                    return new Coordinate(row, col);
-                }
-            }
-        }
-        throw new Exception("too many tries to choose a door location");
-    }
-
-    private boolean isNotACorner(Room room, int row, int col) {
-        return (row == 0 || row == room.getHeight() - 1) && col > 0 && col < room.getWidth() - 1
-                || (col == 0 || col == room.getWidth() - 1) && row > 0 && row < room.getHeight() - 1;
-    }
 
     @Override
     protected Room digRoom(Room previousRoom) throws Exception {
@@ -64,16 +41,16 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                 // if corridor can be placed, attempt to place a room
                 Room corridor = generateCorridor(previousRoom, doorLocation, corridorLength);
                 if (this.dungeon.canAddRoom(corridor, corridorOffset)) {
-                    CorridorDirection corridorDirection = determineCorridorDirection(previousRoom, doorLocation);
+                    CardinalDirection corridorDirection = previousRoom.determineWallDirection(doorLocation);
                     Coordinate lastCorridorTile = calculateLastCorridorTile(corridor, corridorDirection, corridorOffset);
-                    Coordinate roomOffset = calculateRoomOffset(room, corridorDirection, lastCorridorTile);
+                    Coordinate roomOffset = chooseRoomOffset(room, corridorDirection, lastCorridorTile);
 
                     if (dungeon.canAddRoom(room, roomOffset)) {
                         this.dungeon.addTile(doorLocation.add(this.previousOffset), generateDoor());
                         this.dungeon.addRoom(corridor, corridorOffset);
                         this.dungeon.addRoom(room, roomOffset);
 
-                        Coordinate otherDoorCoords = calculateOtherDoorCoords(corridorDirection, lastCorridorTile);
+                        Coordinate otherDoorCoords = lastCorridorTile.calculateNeighborCoordinate(corridorDirection);
                         this.dungeon.addTile(otherDoorCoords, generateDoor());
 
                         this.previousOffset = roomOffset;
@@ -86,50 +63,55 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         }
     }
 
+    private Door generateDoor() {
+        return new Door(false); // TODO - generate locked and secret doors
+    }
+
     /**
-     * Calculates the offset of the room. The coordinate of the side adjacent to the corridor is randomly chosen.
+     * Randomly chooses the location of the door to place in the room.
+     * @param room the room to place a door in
+     * @return the coordinate of the door, relative to the room
+     * @throws Exception if there has been too many tries finding a location for the door
+     */
+    private Coordinate chooseDoorLocation(Room room) throws Exception {
+        for (int i = 0; i < MAX_DOOR_TRIES; i++) {
+            int row = random.nextInt(room.getHeight());
+            int col = random.nextInt(room.getWidth());
+            if (room.isNotACorner(new Coordinate(row, col))) {
+                Tile tile = room.getTile(row, col);
+                if (tile instanceof Wall) {
+                    return new Coordinate(row, col);
+                }
+            }
+        }
+        throw new Exception("too many tries to choose a door location");
+    }
+
+    /**
+     * Chooses the offset of the room. The coordinate of the side adjacent to the corridor is randomly chosen.
      *
      * @param room              the room
      * @param corridorDirection the direction of the corridor going into the room
      * @param lastCorridorTile  the coordinates of the last tile in the corridor
      * @return the coordinates of the offset for the room
      */
-    private Coordinate calculateRoomOffset(Room room, CorridorDirection corridorDirection, Coordinate lastCorridorTile) {
-        if (corridorDirection == CorridorDirection.UP) {
+    private Coordinate chooseRoomOffset(Room room, CardinalDirection corridorDirection, Coordinate lastCorridorTile) {
+        if (corridorDirection == CardinalDirection.NORTH) {
             int row = lastCorridorTile.getRow() - room.getHeight();
             int col = random.nextInt(room.getWidth() - 2) + lastCorridorTile.getColumn() - (room.getWidth() - 2);
             return new Coordinate(row, col);
-        } else if (corridorDirection == CorridorDirection.DOWN) {
+        } else if (corridorDirection == CardinalDirection.SOUTH) {
             int row = lastCorridorTile.getRow() + 1;
             int col = random.nextInt(room.getWidth() - 2) + lastCorridorTile.getColumn() - (room.getWidth() - 2);
             return new Coordinate(row, col);
-        } else if (corridorDirection == CorridorDirection.LEFT) {
+        } else if (corridorDirection == CardinalDirection.WEST) {
             int row = random.nextInt(room.getHeight() - 2) + lastCorridorTile.getRow() - (room.getHeight() - 2);
             int col = lastCorridorTile.getColumn() - room.getWidth();
             return new Coordinate(row, col);
-        } else { // CorridorDirection.RIGHT
+        } else { // CorridorDirection.EAST
             int row = random.nextInt(room.getHeight() - 2) + lastCorridorTile.getRow() - (room.getHeight() - 2);
             int col = lastCorridorTile.getColumn() + 1;
             return new Coordinate(row, col);
-        }
-    }
-
-    /**
-     * Calculates the coordinates of the door on the other side of a corridor.
-     *
-     * @param corridorDirection the direction the corridor is going
-     * @param lastCorridorTile  the coordinates of the last tile in the corridor
-     * @return the coordinates of the door
-     */
-    private Coordinate calculateOtherDoorCoords(CorridorDirection corridorDirection, Coordinate lastCorridorTile) {
-        if (corridorDirection == CorridorDirection.UP) {
-            return new Coordinate(lastCorridorTile.getRow() - 1, lastCorridorTile.getColumn());
-        } else if (corridorDirection == CorridorDirection.DOWN) {
-            return new Coordinate(lastCorridorTile.getRow() + 1, lastCorridorTile.getColumn());
-        } else if (corridorDirection == CorridorDirection.LEFT) {
-            return new Coordinate(lastCorridorTile.getRow(), lastCorridorTile.getColumn() - 1);
-        } else { // CorridorDirection.RIGHT
-            return new Coordinate(lastCorridorTile.getRow(), lastCorridorTile.getColumn() + 1);
         }
     }
 
@@ -141,12 +123,12 @@ public class LinearDiggingGenerator extends DiggingGenerator {
      * @param offset    the offset of the corridor
      * @return the coordinates of last tile of the corridor
      */
-    private Coordinate calculateLastCorridorTile(Room corridor, CorridorDirection direction, Coordinate offset) {
-        if (direction == CorridorDirection.UP || direction == CorridorDirection.LEFT) {
+    private Coordinate calculateLastCorridorTile(Room corridor, CardinalDirection direction, Coordinate offset) {
+        if (direction == CardinalDirection.NORTH || direction == CardinalDirection.WEST) {
             return new Coordinate(offset.getRow(), offset.getColumn());
-        } else if (direction == CorridorDirection.DOWN) {
+        } else if (direction == CardinalDirection.SOUTH) {
             return new Coordinate(offset.getRow() + corridor.getHeight() - 1, offset.getColumn());
-        } else { // CorridorDirection.RIGHT
+        } else { // CorridorDirection.EAST
             return new Coordinate(offset.getRow(), offset.getColumn() + corridor.getWidth() - 1);
         }
     }
@@ -158,7 +140,7 @@ public class LinearDiggingGenerator extends DiggingGenerator {
      * @param doorLocation   the door where the corridor starts, relative to the room
      * @param roomOffset     the offset for the room
      * @param corridorLength the length of the corridor
-     * @return the coordinates of the offset for the corridor
+     * @return the offset for the corridor
      */
     private Coordinate calculateCorridorOffset(Room room, Coordinate doorLocation, Coordinate roomOffset, int corridorLength) {
         Coordinate doorLocationInDungeon = doorLocation.add(roomOffset);
@@ -189,38 +171,9 @@ public class LinearDiggingGenerator extends DiggingGenerator {
         }
     }
 
-    /**
-     * Determines direction of corridor; assumes no doors on corner walls.
-     *
-     * @param room         the room the corridor is coming from
-     * @param doorLocation the location of the door at the start of the corridor, relative to the room
-     * @return the direction of the corridor
-     */
-    private CorridorDirection determineCorridorDirection(Room room, Coordinate doorLocation) {
-        if (doorLocation.getRow() == 0) { // top wall
-            return CorridorDirection.UP;
-        } else if (doorLocation.getRow() == room.getHeight() - 1) { // bottom wall
-            return CorridorDirection.DOWN;
-        } else if (doorLocation.getColumn() == 0) { // left wall
-            return CorridorDirection.LEFT;
-        } else { // right wall
-            return CorridorDirection.RIGHT;
-        }
-    }
-
     private Room generateRoom() {
         int height = random.nextInt(MAX_ROOM_HEIGHT - MIN_ROOM_HEIGHT + 1) + MIN_ROOM_HEIGHT;
         int width = random.nextInt(MAX_ROOM_WIDTH - MIN_ROOM_WIDTH + 1) + MIN_ROOM_WIDTH;
         return Room.createEmptyRoom(height, width);
-    }
-
-    /**
-     * Enum for the direction a corridor is going in.
-     */
-    public enum CorridorDirection {
-        UP,
-        DOWN,
-        LEFT,
-        RIGHT
     }
 }

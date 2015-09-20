@@ -1,6 +1,8 @@
 package io.samjones.roguelike.dungeon;
 
 
+import io.samjones.roguelike.generator.CardinalDirection;
+
 public class Coordinate {
     private int row;
     private int column;
@@ -20,6 +22,24 @@ public class Coordinate {
 
     public Coordinate add(Coordinate coordinate) {
         return new Coordinate(this.getRow() + coordinate.getRow(), this.getColumn() + coordinate.getColumn());
+    }
+
+    /**
+     * Calculates the coordinates of an adjacent coordinate, given a direction.
+     *
+     * @param direction the direction the adjacent coordinate is in
+     * @return the coordinates of the adjacent coordinate
+     */
+    public Coordinate calculateNeighborCoordinate(CardinalDirection direction) {
+        if (direction == CardinalDirection.NORTH) {
+            return new Coordinate(this.getRow() - 1, this.getColumn());
+        } else if (direction == CardinalDirection.SOUTH) {
+            return new Coordinate(this.getRow() + 1, this.getColumn());
+        } else if (direction == CardinalDirection.WEST) {
+            return new Coordinate(this.getRow(), this.getColumn() - 1);
+        } else { // CorridorDirection.EAST
+            return new Coordinate(this.getRow(), this.getColumn() + 1);
+        }
     }
 
     @Override

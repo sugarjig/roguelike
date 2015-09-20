@@ -4,10 +4,8 @@ import io.samjones.roguelike.dungeon.tiles.Corridor;
 import io.samjones.roguelike.dungeon.tiles.Floor;
 import io.samjones.roguelike.dungeon.tiles.Tile;
 import io.samjones.roguelike.dungeon.tiles.Wall;
+import io.samjones.roguelike.generator.CardinalDirection;
 
-/**
- * Created by sam for roguelike.
- */
 public class Room extends Region {
     public Room() {
         super();
@@ -39,6 +37,32 @@ public class Room extends Region {
             }
         }
         return room;
+    }
+
+    public boolean isNotACorner(Coordinate coordinate) {
+        int row = coordinate.getRow();
+        int col = coordinate.getColumn();
+        return (row == 0 || row == this.getHeight() - 1) && col > 0 && col < this.getWidth() - 1
+                || (col == 0 || col == this.getWidth() - 1) && row > 0 && row < this.getHeight() - 1;
+    }
+
+    /**
+     * Determines direction a wall is facing.
+     *
+     * @param wallLocation the location of the wall, relative to the room; assumes the passed in value in a wall and is
+     *                     not a corner
+     * @return the direction of the wall is facing
+     */
+    public CardinalDirection determineWallDirection(Coordinate wallLocation) {
+        if (wallLocation.getRow() == 0) { // top wall
+            return CardinalDirection.NORTH;
+        } else if (wallLocation.getRow() == this.getHeight() - 1) { // bottom wall
+            return CardinalDirection.SOUTH;
+        } else if (wallLocation.getColumn() == 0) { // left wall
+            return CardinalDirection.WEST;
+        } else { // right wall
+            return CardinalDirection.EAST;
+        }
     }
 
     @Override
