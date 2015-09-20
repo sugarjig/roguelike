@@ -27,7 +27,6 @@ public class LinearDiggingGenerator extends DiggingGenerator {
     public static final int MAX_ROOM_TRIES = 25;
     public static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
     private Random random = new Random();
-    private Coordinate previousOffset = new Coordinate(0, 0);
 
     /**
      * Calculates the offset for a corridor. Depends on the corridor being either one tile wide or one tile tall.
@@ -108,9 +107,6 @@ public class LinearDiggingGenerator extends DiggingGenerator {
                         // place a door in the new room where the corridor ends
                         Coordinate otherDoorCoords = lastCorridorTile.calculateNeighborCoordinate(corridorDirection);
                         this.dungeon.addTile(otherDoorCoords, generateDoor());
-
-                        // set the offset of the new room so we can use it to generate the next room
-                        this.previousOffset = roomOffset;
 
                         return room;
                     }

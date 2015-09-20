@@ -71,4 +71,8 @@ public class Dungeon extends Region {
     public List<Room> getRooms() {
         return rooms;
     }
+
+    public List<Room> getCorridors() {
+        return corridors;
+    }
 }
