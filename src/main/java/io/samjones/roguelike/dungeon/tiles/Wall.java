@@ -4,7 +4,7 @@ package io.samjones.roguelike.dungeon.tiles;
  * A wall tile.
  */
 public class Wall implements Tile {
-    private WallType wallType;
+    private final WallType wallType;
 
     /**
      * Constructs a new wall tile.

@@ -18,6 +18,9 @@ public class Dungeon extends Region {
     private List<Room> rooms;
     private List<Room> corridors;
 
+    /**
+     * Constructs a new dungeon.
+     */
     public Dungeon() {
         super();
         rooms = new ArrayList<>();

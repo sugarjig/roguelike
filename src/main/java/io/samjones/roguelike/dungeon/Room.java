@@ -149,11 +149,4 @@ public class Room extends Region {
     public RoomType getRoomType() {
         return roomType;
     }
-
-    @Override
-    public String toString() {
-        return "Room{" +
-                "tiles=" + tiles +
-                '}';
-    }
 }

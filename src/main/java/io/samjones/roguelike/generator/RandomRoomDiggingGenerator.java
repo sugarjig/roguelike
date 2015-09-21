@@ -15,19 +15,19 @@ import java.util.Random;
  * so.
  */
 public class RandomRoomDiggingGenerator extends DiggingGenerator {
-    public static final int MIN_ROOM_HEIGHT = 5;
-    public static final int MIN_ROOM_WIDTH = 5;
-    public static final int MAX_ROOM_HEIGHT = 15;
-    public static final int MAX_ROOM_WIDTH = 15;
-    public static final int MIN_CORRIDOR_LENGTH = 1;
-    public static final int MAX_CORRIDOR_LENGTH = 10;
-    public static final int MAX_DOOR_TRIES = 2 * (MAX_ROOM_HEIGHT + MAX_ROOM_WIDTH);
-    public static final int MAX_ROOM_TRIES = 25;
-    public static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
-    public static final double CHANCE_OF_CHEST = 0.5;
-    public static final double CHANCE_OF_MONSTER = 0.75;
-    public static final double CHANCE_OF_TRAP = 0.25;
-    private Random random = new Random();
+    private static final int MIN_ROOM_HEIGHT = 5;
+    private static final int MIN_ROOM_WIDTH = 5;
+    private static final int MAX_ROOM_HEIGHT = 15;
+    private static final int MAX_ROOM_WIDTH = 15;
+    private static final int MIN_CORRIDOR_LENGTH = 1;
+    private static final int MAX_CORRIDOR_LENGTH = 10;
+    private static final int MAX_DOOR_TRIES = 2 * (MAX_ROOM_HEIGHT + MAX_ROOM_WIDTH);
+    private static final int MAX_ROOM_TRIES = 25;
+    private static final int MAX_ROOM_TILE_TRIES = (MAX_ROOM_HEIGHT - 2) * (MAX_ROOM_WIDTH - 2);
+    private static final double CHANCE_OF_CHEST = 0.5;
+    private static final double CHANCE_OF_MONSTER = 0.75;
+    private static final double CHANCE_OF_TRAP = 0.25;
+    private final Random random = new Random();
 
     /**
      * Calculates the offset for a corridor. Depends on the corridor being either one tile wide or one tile tall.
@@ -239,7 +239,7 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
     }
 
     /**
-     * Randomlly chooses an empty location in a room.
+     * Randomly chooses an empty location in a room.
      * @param room the room
      * @return the coordinates of the chosen location
      * @throws Exception if there has been too many tries finding a location

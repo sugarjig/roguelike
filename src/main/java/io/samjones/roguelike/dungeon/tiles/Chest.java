@@ -4,7 +4,7 @@ package io.samjones.roguelike.dungeon.tiles;
  * A chest tile. Can contain an item.
  */
 public class Chest implements Tile {
-    Item item;
+    private final Item item;
 
     /**
      * Constructs a new chest.
@@ -28,7 +28,7 @@ public class Chest implements Tile {
      * An item that can be put in a chest.
      */
     public static class Item {
-        private String name;
+        private final String name;
 
         /**
          * Constructs a new item.

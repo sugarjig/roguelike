@@ -9,5 +9,5 @@ public enum WallType {
     UPPER_LEFT,
     UPPER_RIGHT,
     LOWER_LEFT,
-    LOWER_RIGHT;
+    LOWER_RIGHT
 }

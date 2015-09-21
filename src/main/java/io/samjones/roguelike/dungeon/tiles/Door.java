@@ -4,7 +4,7 @@ package io.samjones.roguelike.dungeon.tiles;
  * A door tile. Can be locked.
  */
 public class Door implements Tile {
-    private boolean locked;
+    private final boolean locked;
 
     /**
      * Constructs a new door.

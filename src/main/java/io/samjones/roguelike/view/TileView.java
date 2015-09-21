@@ -3,7 +3,7 @@ package io.samjones.roguelike.view;
 /**
  * An interface to hold the character points for the tile representations.
  */
-public interface TileView {
+interface TileView {
     int FLOOR = ' ';
     int WALL_HORIZONTAL = 0x2550;
     int WALL_VERTICAL = 0x2551;

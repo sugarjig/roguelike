@@ -11,12 +11,12 @@ import java.util.Collections;
  */
 public class Region {
     // since the table keys are integers, use a RowSortedSet; this will (in theory) make retrieval operations faster
-    protected RowSortedTable<Integer, Integer, Tile> tiles;
+    private RowSortedTable<Integer, Integer, Tile> tiles;
 
     /**
      * Constructs a new region.
      */
-    public Region() {
+    Region() {
         this.tiles = TreeBasedTable.create();
     }
 

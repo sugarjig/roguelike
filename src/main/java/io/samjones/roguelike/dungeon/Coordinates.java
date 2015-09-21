@@ -4,8 +4,8 @@ package io.samjones.roguelike.dungeon;
  * A set of coordinates in a grid-based dungeon. Represents a 0-based row and column.
  */
 public class Coordinates {
-    private int row;
-    private int column;
+    private final int row;
+    private final int column;
 
     /**
      * Constructs a new set of coordinates.

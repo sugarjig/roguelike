@@ -16,8 +16,8 @@ import io.samjones.roguelike.dungeon.tiles.*;
  * A class to encapsulate the Blacken curses-like terminal.
  */
 public class DungeonViewer {
-    public static final int TERMINAL_HEIGHT = 25;
-    public static final int TERMINAL_WIDTH = 80;
+    private static final int TERMINAL_HEIGHT = 25;
+    private static final int TERMINAL_WIDTH = 80;
     private CursesLikeAPI cursesTerminal;
     private Grid<Integer> grid;
     private Point offset = new Point(0, 0);

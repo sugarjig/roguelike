@@ -6,7 +6,7 @@ package io.samjones.roguelike.dungeon.tiles;
  * Obviously a real dungeon implementation would not make monsters a tile.
  */
 public class Monster implements Tile {
-    private boolean boss;
+    private final boolean boss;
 
     /**
      * Constructs a new monster tile.
