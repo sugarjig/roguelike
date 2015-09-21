@@ -117,7 +117,7 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
     }
 
     private Door generateDoor() {
-        return new Door(false); // TODO - generate locked and secret doors
+        return new Door(false);
     }
 
     /**
@@ -206,8 +206,6 @@ public class RandomRoomDiggingGenerator extends DiggingGenerator {
         int roomNum = random.nextInt(rooms.size());
         return rooms.get(roomNum);
     }
-
-    // TODO - create common method for finding locations
 
     /**
      * Randomly chooses the location of the door to place in the room.
