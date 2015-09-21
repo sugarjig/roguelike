@@ -8,10 +8,13 @@ import com.googlecode.blacken.swing.SwingTerminal;
 import com.googlecode.blacken.terminal.BlackenKeys;
 import com.googlecode.blacken.terminal.CursesLikeAPI;
 import com.googlecode.blacken.terminal.TerminalInterface;
-import io.samjones.roguelike.dungeon.Coordinate;
+import io.samjones.roguelike.dungeon.Coordinates;
 import io.samjones.roguelike.dungeon.Dungeon;
 import io.samjones.roguelike.dungeon.tiles.*;
 
+/**
+ * A class to encapsulate the Blacken curses-like terminal.
+ */
 public class DungeonViewer {
     public static final int TERMINAL_HEIGHT = 25;
     public static final int TERMINAL_WIDTH = 80;
@@ -19,6 +22,10 @@ public class DungeonViewer {
     private Grid<Integer> grid;
     private Point offset = new Point(0, 0);
 
+    /**
+     * Constructs a new dungeon viewer.
+     * @param dungeon the dungeon to display
+     */
     public DungeonViewer(Dungeon dungeon) {
         TerminalInterface terminal = new SwingTerminal();
         terminal.init("Roguelike Dungeon Viewer", TERMINAL_HEIGHT, TERMINAL_WIDTH);
@@ -36,7 +43,7 @@ public class DungeonViewer {
         Grid<Integer> grid = new Grid<>(TileView.NULL_TILE, dungeon.getHeight(), dungeon.getWidth());
         for (int row = 0; row < grid.getHeight(); row++) {
             for (int col = 0; col < grid.getWidth(); col++) {
-                Tile tile = dungeon.getTile(new Coordinate(row, col));
+                Tile tile = dungeon.getTile(new Coordinates(row, col));
                 grid.set(row, col, translateTile(tile));
             }
         }
@@ -82,6 +89,9 @@ public class DungeonViewer {
         }
     }
 
+    /**
+     * Shows the terminal window.
+     */
     public void showTerminal() {
         boolean quit = false;
         while (!quit) {

@@ -2,16 +2,32 @@ package io.samjones.roguelike.dungeon;
 
 import io.samjones.roguelike.dungeon.tiles.*;
 
+/**
+ * A room in a grid-based dungeon.
+ */
 public class Room extends Region {
-    private Coordinate offset;
+    private Coordinates offset;
     private RoomType roomType;
 
+    /**
+     * Constructs a new room of the specified type.
+     *
+     * @param roomType the type of room (empty, corridor, entrance, exit, etc.)
+     */
     public Room(RoomType roomType) {
         super();
-        this.offset = new Coordinate(0, 0);
+        this.offset = new Coordinates(0, 0);
         this.roomType = roomType;
     }
 
+    /**
+     * Creates an empty room of the specified size and type.
+     *
+     * @param height   the height of the room
+     * @param width    the width of the room
+     * @param roomType the type of the room
+     * @return the created room
+     */
     public static Room createEmptyRoom(int height, int width, RoomType roomType) {
         Room room = new Room(roomType);
         for (int row = 0; row < height; row++) {
@@ -40,61 +56,96 @@ public class Room extends Region {
                 } else {
                     tile = new Floor();
                 }
-                room.addTile(new Coordinate(row, col), tile);
+                room.addTile(new Coordinates(row, col), tile);
             }
         }
         return room;
     }
 
+    /**
+     * Creates a corridor of the specified size.
+     *
+     * @param height the height of the corridor
+     * @param width  the width of the corridor
+     * @return the created corridor
+     */
     public static Room createCorridor(int height, int width) {
         Room room = new Room(RoomType.CORRIDOR);
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
-                room.addTile(new Coordinate(row, col), new Corridor());
+                room.addTile(new Coordinates(row, col), new Corridor());
             }
         }
         return room;
     }
 
-    public boolean isANonCornerWall(Coordinate coordinate) {
-        int row = coordinate.getRow();
-        int col = coordinate.getColumn();
+    /**
+     * Returns true if a set of coordinates points to a non-corner wall.
+     *
+     * @param coordinates the coordinates to check
+     * @return true if the coordinates point to a non-corner wall
+     */
+    public boolean isANonCornerWall(Coordinates coordinates) {
+        int row = coordinates.getRow();
+        int col = coordinates.getColumn();
         boolean isHorizontalWall = (row == 0 || row == this.getHeight() - 1) && col > 0 && col < this.getWidth() - 1;
         boolean isVerticalWall = (col == 0 || col == this.getWidth() - 1) && row > 0 && row < this.getHeight() - 1;
         return isHorizontalWall || isVerticalWall;
     }
 
-    public boolean isAnEmptyFloor(Coordinate location) {
-        return this.getTile(location) instanceof Floor;
+    /**
+     * Returns true if a set of coordinates points to an empty floor.
+     *
+     * @param coordinates the coordinates to check
+     * @return true if the coordinates point to an empty floor tile
+     */
+    public boolean isAnEmptyFloor(Coordinates coordinates) {
+        return this.getTile(coordinates) instanceof Floor;
     }
 
     /**
-     * Determines direction a wall is facing.
+     * Determines the direction a wall is facing.
      *
-     * @param wallLocation the location of the wall, relative to the room; assumes the passed in value in a wall and is
-     *                     not a corner
-     * @return the direction of the wall is facing
+     * @param wallLocation the location of the wall in the room; assumes the passed in value is a non-corner wall
+     * @return the direction of the wall is facing; null if the coordinates do not point to a wall
      */
-    public CardinalDirection determineWallDirection(Coordinate wallLocation) {
+    public CardinalDirection determineWallDirection(Coordinates wallLocation) {
         if (wallLocation.getRow() == 0) { // top wall
             return CardinalDirection.NORTH;
         } else if (wallLocation.getRow() == this.getHeight() - 1) { // bottom wall
             return CardinalDirection.SOUTH;
         } else if (wallLocation.getColumn() == 0) { // left wall
             return CardinalDirection.WEST;
-        } else { // right wall
+        } else if (wallLocation.getColumn() == this.getWidth() - 1) { // right wall
             return CardinalDirection.EAST;
+        } else {
+            return null;
         }
     }
 
-    public Coordinate getOffset() {
+    /**
+     * Gets the offset of the room within a dungeon.
+     *
+     * @return the offset
+     */
+    public Coordinates getOffset() {
         return offset;
     }
 
-    public void setOffset(Coordinate offset) {
+    /**
+     * Sets the offset of the room within a dungeon.
+     *
+     * @param offset the offset
+     */
+    public void setOffset(Coordinates offset) {
         this.offset = offset;
     }
 
+    /**
+     * Gets the room type.
+     *
+     * @return the room type
+     */
     public RoomType getRoomType() {
         return roomType;
     }

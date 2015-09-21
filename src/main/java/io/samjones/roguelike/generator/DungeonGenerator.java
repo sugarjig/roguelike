@@ -3,11 +3,11 @@ package io.samjones.roguelike.generator;
 import io.samjones.roguelike.dungeon.Dungeon;
 
 /**
- * Interface for a dungeon generator.
+ * An interface for a dungeon generator.
  */
 public interface DungeonGenerator {
     /**
-     * Generate a dungeon with a specified number of rooms.
+     * Generates a dungeon with a specified number of rooms.
      *
      * @param numRooms the number of rooms to generate
      * @return the dungeon

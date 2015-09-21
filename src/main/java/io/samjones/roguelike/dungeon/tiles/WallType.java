@@ -1,7 +1,7 @@
 package io.samjones.roguelike.dungeon.tiles;
 
 /**
- * Created by sam for roguelike.
+ * An enum for a wall type.
  */
 public enum WallType {
     HORIZONTAL,
