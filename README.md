@@ -1,7 +1,7 @@
 # A Simple Roguelike Dungeon Generator
 
-This is a VERY simple Roguelike dungeon generator. Right now it generates a specified number of rooms. The generator
-will create an entrance and exit, and there will be no unreachable rooms.
+This is a VERY simple Roguelike dungeon generator. It generates a specified number of rooms and creates an entrance and
+exit, and there will be no unreachable rooms.
 
 ## The Dungeon
 
